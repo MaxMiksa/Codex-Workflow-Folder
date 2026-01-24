@@ -42,3 +42,4 @@
 - This uninstall does NOT delete `*.bak` backups.
 - The uninstall script removes `codex.workflow.collapseByDefault = ...` from `%USERPROFILE%\\.codex\\config.toml` (default behavior is `"disable"` when missing).
 
+
