@@ -38,6 +38,11 @@ Rule: “Workflow” must contain everything before the final answer (reasoning/
   - `"collapse"`: show Workflow, default collapsed
   - `"expand"`: show Workflow, default expanded
   - `"disable"`: disable feature (upstream behavior)
+- Accepted TOML forms (equivalent):
+  - Dotted key: `codex.workflow.collapseByDefault = "collapse"`
+  - Table form:
+    - `[codex.workflow]`
+    - `collapseByDefault = "collapse"`
 - Default behavior: missing key is treated as `"disable"`
 - Restart: VS Code restart is required after config changes
 

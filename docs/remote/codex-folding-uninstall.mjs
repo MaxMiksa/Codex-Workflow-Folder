@@ -75,10 +75,53 @@ async function removeCollapseConfigKey() {
   if (!(await fileExists(configPath))) return { changed: false, configPath };
 
   const before = await fs.readFile(configPath, "utf8");
-  const lineRegex =
-    /^\s*codex\.workflow\.collapseByDefault\s*=\s*"(collapse|expand|disable)"\s*[\r\n]+/gim;
-  let after = before.replace(lineRegex, "");
-  after = after.replace(/\n{3,}/g, "\n\n");
+  const lines = before.split(/\r?\n/);
+  const out = [];
+  let inWf = false;
+  for (let i = 0; i < lines.length; i++) {
+    const ln = lines[i];
+    if (/^\s*\[codex\.workflow\]\s*$/.test(ln)) {
+      inWf = true;
+      out.push(ln);
+      continue;
+    }
+    if (inWf && /^\s*\[/.test(ln)) {
+      inWf = false;
+    }
+
+    if (
+      /^\s*codex\.workflow\.collapseByDefault\s*=\s*"(collapse|expand|disable)"\s*$/.test(
+        ln
+      )
+    ) {
+      continue;
+    }
+    if (
+      inWf &&
+      /^\s*collapseByDefault\s*=\s*"(collapse|expand|disable)"\s*$/.test(ln)
+    ) {
+      continue;
+    }
+    out.push(ln);
+  }
+
+  // Drop an empty [codex.workflow] section (header followed only by blanks).
+  const cleaned = [];
+  for (let i = 0; i < out.length; i++) {
+    const ln = out[i];
+    if (/^\s*\[codex\.workflow\]\s*$/.test(ln)) {
+      let j = i + 1;
+      while (j < out.length && /^\s*$/.test(out[j])) j++;
+      if (j === out.length || /^\s*\[/.test(out[j])) {
+        i = j - 1;
+        continue;
+      }
+    }
+    cleaned.push(ln);
+  }
+
+  let after = cleaned.join("\n");
+  after = after.replace(/\n{3,}/g, "\n\n").trimEnd() + "\n";
 
   if (after === before) return { changed: false, configPath };
   await fs.writeFile(configPath, after, "utf8");

@@ -2,14 +2,16 @@ Host patch (injected into installed extension `out/extension.js`)
 
 Purpose:
 - Read `%USERPROFILE%\.codex\config.toml` and extract:
-  `codex.workflow.collapseByDefault = "collapse" | "expand" | "disable"`
+  - `codex.workflow.collapseByDefault = "collapse" | "expand" | "disable"`
+  - OR TOML table form:
+    `[codex.workflow]` + `collapseByDefault = "collapse" | "expand" | "disable"`
 - Inject the value into the webview HTML as:
   `<meta name="codex-workflow-collapse" content="...">`
 
 Injected snippet (minified style, inserted inside `getWebviewContentProduction` before `return l`):
 
-let wf="disable";try{let d=wt({preferWsl:Bt()}),f=MB.join(d,"config.toml"),txt=await jy.promises.readFile(f,"utf-8");let m=txt.match(/^\s*codex\.workflow\.collapseByDefault\s*=\s*"(collapse|expand|disable)"\s*$/m);m&&(wf=m[1])}catch{}l=l.replace("</head>",`<meta name="codex-workflow-collapse" content="${wf}">\n</head>`);
+/* CODEX_WORKFLOW_FOLD_HOST_V2 */let wf="disable";try{let d=wt({preferWsl:Bt()}),f=MB.join(d,"config.toml"),txt=await jy.promises.readFile(f,"utf-8");let m=txt.match(/^\s*codex\.workflow\.collapseByDefault\s*=\s*"(collapse|expand|disable)"\s*$/m);m&&(wf=m[1]);if(wf==="disable"){let inWf=!1;for(let ln of txt.split(/\r?\n/)){if(/^\s*\[codex\.workflow\]\s*$/.test(ln)){inWf=!0;continue}if(inWf&&/^\s*\[/.test(ln))break;if(inWf){let mm=ln.match(/^\s*collapseByDefault\s*=\s*"(collapse|expand|disable)"\s*$/);mm&&(wf=mm[1])}}}}catch{}l=l.replace("</head>",`<meta name="codex-workflow-collapse" content="${wf}">\n</head>`);
 
 Verification marker:
 - The patched file must contain the string: `codex-workflow-collapse`
-
+- The patched file should contain the string: `CODEX_WORKFLOW_FOLD_HOST_V2`
