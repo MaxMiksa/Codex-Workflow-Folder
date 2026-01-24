@@ -44,13 +44,18 @@
 - 修改 VS Code 扩展文件前先备份（保留 *.bak）。
 
 步骤：
-1) 在本仓库运行：`npm test`
-2) 应用补丁到已安装扩展：`npm run apply`
-3) 幂等验证：`npm run verify`
-4) 告诉我编辑 `C:\Users\<我>\.codex\config.toml` 并设置：
+1) 克隆本仓库并以仓库根目录作为工作目录：
+   `git clone https://github.com/MaxMiksa/Codex-Folding.git`
+2) 运行：`npm test`
+3) 运行：`node tools/workflow-fold/inspect.mjs`
+4) 应用补丁到已安装扩展：`npm run apply`
+5) 幂等验证：`npm run verify`
+6) 告诉我编辑 `C:\Users\<我>\.codex\config.toml` 并设置：
    `codex.workflow.collapseByDefault = "collapse"`
-5) 告诉我重启 VS Code。
-6) 输出所有被修改文件及其备份文件的绝对路径。
+7) 告诉我重启 VS Code。
+8) 输出所有被修改文件及其备份文件的绝对路径。
+9) 另外为我保存一份本地手册副本：
+   `docs/AI_OPERATOR_MANUAL.md`
 ```
 
 ### 卸载 Prompt（发给 AI）
@@ -113,4 +118,3 @@
 如有任何问题或建议，请联系 Zheyuan (Max) Kong (卡内基梅隆大学，宾夕法尼亚州)。
 
 Zheyuan (Max) Kong: kongzheyuan@outlook.com | zheyuank@andrew.cmu.edu
-

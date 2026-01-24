@@ -44,13 +44,18 @@ Constraints:
 - Create backups of any modified VS Code extension files (keep *.bak).
 
 Steps:
-1) In this repo, run: `npm test`
-2) Apply the patch to the installed extension: `npm run apply`
-3) Verify idempotence: `npm run verify`
-4) Tell me to edit `C:\Users\<ME>\.codex\config.toml` and set:
+1) Clone this repo and open it as your working directory:
+   `git clone https://github.com/MaxMiksa/Codex-Folding.git`
+2) Run: `npm test`
+3) Run: `node tools/workflow-fold/inspect.mjs`
+4) Apply the patch: `npm run apply`
+5) Verify idempotence: `npm run verify`
+6) Tell me to edit `C:\Users\<ME>\.codex\config.toml` and set:
    `codex.workflow.collapseByDefault = "collapse"`
-5) Tell me to restart VS Code.
-6) Output the absolute paths of modified files and their backups.
+7) Tell me to restart VS Code.
+8) Output the absolute paths of modified files and their backups.
+9) Also save a local copy of this manual for me:
+   `docs/AI_OPERATOR_MANUAL.md`
 ```
 
 ### Uninstall Prompt (give to AI)
@@ -114,4 +119,3 @@ Welcome to submit Issues and Pull Requests!
 Any questions or suggestions? Please contact Zheyuan (Max) Kong (Carnegie Mellon University, Pittsburgh, PA).
 
 Zheyuan (Max) Kong: kongzheyuan@outlook.com | zheyuank@andrew.cmu.edu
-

@@ -1,0 +1,25 @@
+Webview patch (injected into installed webview bundle `webview/assets/index-*.js`)
+
+Purpose:
+- Add a synthetic `workflow` item per turn that groups all “process items” between:
+  - `user-message` (start of turn)
+  - `assistant-message` (final answer)
+- Render `workflow` as a clickable header (fold/unfold), with:
+  - status: `Working` / `Done`
+  - timer: updates every 1s while running
+- Preserve original rendering of children when expanded.
+
+Key behaviors:
+- If `codex.workflow.collapseByDefault` is:
+  - `disable`: do nothing (upstream behavior)
+  - `collapse`: show Workflow, default folded
+  - `expand`: show Workflow, default expanded
+- Detects mode from:
+  `<meta name="codex-workflow-collapse" content="...">`
+
+Verification marker:
+- The patched file must contain the string: `CODEX_WORKFLOW_FOLD_PATCH`
+
+Injected patch code is owned by this repo and can be reviewed in:
+- `tools/workflow-fold/patcher.mjs` (search for `CODEX_WORKFLOW_FOLD_PATCH`)
+

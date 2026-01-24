@@ -14,14 +14,21 @@
    - Command: `npm test`
    - Expected: PASS
 
-2. Apply patch (creates `*.bak` backups once)
+2. Inspect compatibility (recommended)
+   - Command: `node tools/workflow-fold/inspect.mjs`
+   - Expected:
+     - Prints the installed extension folder name (`openai.chatgpt-...`)
+     - Prints the active webview bundle (`webview/assets/index-*.js`)
+     - Prints whether a matching profile exists under `docs/patch-profiles/openai.chatgpt/<version>/` (preferred)
+
+3. Apply patch (creates `*.bak` backups once)
    - Command: `npm run apply`
    - Expected: outputs `PATCHED:` or `OK:` lines, no errors
 
-3. Verify idempotence (no changes on second run)
+4. Verify idempotence (no changes on second run)
    - Command: `npm run verify`
 
-4. Configure default behavior
+5. Configure default behavior
    - Edit `C:\Users\<USER>\.codex\config.toml`
    - Set:
      - `codex.workflow.collapseByDefault = "collapse"`
@@ -30,7 +37,7 @@
      - `"expand"`: show Workflow and default expanded
      - `"disable"`: disable feature (upstream behavior)
 
-5. Restart VS Code
+6. Restart VS Code
 
 ## What gets modified
 
@@ -40,4 +47,3 @@
   - `webview\assets\zh-CN-*.js` (adds i18n strings)
 
 See `docs/FILES_CHANGED_ABSOLUTE.md` for absolute paths on the author machine.
-

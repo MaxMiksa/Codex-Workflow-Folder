@@ -1,0 +1,39 @@
+{
+  "extension": {
+    "publisher": "OpenAI",
+    "id": "openai.chatgpt",
+    "folderName": "openai.chatgpt-0.4.66-win32-x64",
+    "testedOn": {
+      "os": "Windows",
+      "codexCli": "0.89.0"
+    }
+  },
+  "targets": [
+    {
+      "kind": "host",
+      "relativePath": "out/extension.js",
+      "backupSuffix": ".bak",
+      "verifyIncludes": ["codex-workflow-collapse"]
+    },
+    {
+      "kind": "webview",
+      "relativePath": "webview/assets/index-*.js",
+      "backupSuffix": ".bak",
+      "verifyIncludes": ["CODEX_WORKFLOW_FOLD_PATCH"]
+    },
+    {
+      "kind": "i18n",
+      "relativePath": "webview/assets/zh-CN-*.js",
+      "backupSuffix": ".bak",
+      "verifyIncludes": ["codex.workflow.label"]
+    }
+  ],
+  "config": {
+    "file": "%USERPROFILE%/.codex/config.toml",
+    "key": "codex.workflow.collapseByDefault",
+    "values": ["collapse", "expand", "disable"],
+    "default": "disable",
+    "restartRequired": true
+  }
+}
+
