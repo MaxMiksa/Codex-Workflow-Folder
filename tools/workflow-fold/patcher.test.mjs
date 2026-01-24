@@ -20,6 +20,7 @@ test("patchWebviewBundleJs injects workflow fold patch marker", () => {
     'function mapStateToLocalConversationItems(rt,Ye){const it=[];return it}function LocalConversationItemContent(rt){switch(rt.item.type){case"user-message":return null;default:return null}}export{foo as bar};';
   const out = patchWebviewBundleJs(input);
   assert.match(out, /CODEX_WORKFLOW_FOLD_PATCH/);
+  assert.match(out, /CODEX_WORKFLOW_FOLD_PATCH_V2/);
   assert.match(out, /workflow/);
 });
 
