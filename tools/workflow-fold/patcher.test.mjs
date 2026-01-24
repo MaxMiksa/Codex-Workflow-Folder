@@ -24,6 +24,8 @@ test("patchWebviewBundleJs injects workflow fold patch marker", () => {
   const out = patchWebviewBundleJs(input);
   assert.match(out, /CODEX_WORKFLOW_FOLD_PATCH/);
   assert.match(out, /CODEX_WORKFLOW_FOLD_PATCH_V2/);
+  assert.match(out, /CODEX_WORKFLOW_FOLD_PATCH_V3/);
+  assert.match(out, /Array\.isArray/);
   assert.match(out, /workflow/);
 });
 
