@@ -11,7 +11,10 @@ test("patchExtensionHostJs injects workflow meta tag", () => {
     'async getWebviewContentProduction(e){let l=i.replace("<!-- PROD_BASE_TAG_HERE -->","X");if(p){let h=this.initialRouteMetaTag(p);h&&(l=l.replace("</head>",`${h}\\n</head>`))}return l}';
   const out = patchExtensionHostJs(input);
   assert.match(out, /codex-workflow-collapse/i);
-  assert.match(out, /CODEX_WORKFLOW_FOLD_HOST_V2/);
+  assert.match(out, /CODEX_WORKFLOW_FOLD_HOST_V3/);
+  assert.match(out, /preferWsl:pref/);
+  assert.match(out, /await read\(Bt\(\)\)/);
+  assert.match(out, /await read\(!1\)/);
   assert.match(out, /\\\[codex\\\.workflow\\\]/);
 });
 
