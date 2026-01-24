@@ -116,6 +116,8 @@ Workflow 内包含“最终回答之前的所有过程内容”，包括但不�
 ## 8. 发布信息（release-ai）
 
 - 当前版本：`v0.5.0`
+- 远程仓库：`https://github.com/MaxMiksa/Codex-Folding`
+- Release 页面：`https://github.com/MaxMiksa/Codex-Folding/releases/tag/v0.5.0`
 - 变更记录与发布说明（对外可追踪版本）：
   - `docs/CHANGELOG-zh.md`
   - `docs/CHANGELOG.md`

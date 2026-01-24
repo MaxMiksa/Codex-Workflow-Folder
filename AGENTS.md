@@ -30,3 +30,7 @@ Privacy: never write secrets (tokens/keys) in plaintext; use placeholders like `
 - Symptom: Unix helpers like `head`, `nl`, `sed` are “not recognized” in PowerShell.
   Cause: They are not built-in Windows/PowerShell commands (unless extra tooling is installed).
   Fix: Prefer PowerShell equivalents like `... | Select-Object -First N` and `Get-Content` with indexing.
+
+- Symptom: `git add` warns about “adding embedded git repository: clone/codex”.
+  Cause: `clone/codex` is itself a git repo; `git add` tries to stage it as a submodule-like entry.
+  Fix: Keep `clone/` ignored (see `.gitignore`) or add it explicitly as a submodule if needed.
