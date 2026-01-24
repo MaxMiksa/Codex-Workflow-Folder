@@ -95,3 +95,18 @@ The exact injected snippets are documented here:
 
 For absolute path examples and the author machine’s recorded changes:
 - `docs/FILES_CHANGED_ABSOLUTE.md`
+
+## Version mismatch strategy (required AI behavior)
+
+If the user’s installed `openai.chatgpt` extension version does not match a profile folder:
+
+1. Inspect and compare (no modifications yet)
+   - Run `node tools/workflow-fold/inspect.mjs` and read:
+     - folder name, extension version, active webview bundle
+     - whether the key anchors exist in the target files
+2. Decide:
+   - If anchors are present and semantics match the profile’s injection docs, proceed with `npm run apply`.
+   - If anchors are missing or target code structure differs materially, STOP and report:
+     - which anchor(s) are missing
+     - what changed in the target file(s)
+     - recommendation: pin extension version or add a new profile under `docs/patch-profiles/openai.chatgpt/<version>/`

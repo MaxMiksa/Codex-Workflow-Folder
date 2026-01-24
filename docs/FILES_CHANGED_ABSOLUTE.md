@@ -13,14 +13,21 @@
 - `D:\Max\Projects\Dev\PR-Codex-Feature-Fold\README.md`
 - `D:\Max\Projects\Dev\PR-Codex-Feature-Fold\docs\FILES_CHANGED_ABSOLUTE.md`
 - `D:\Max\Projects\Dev\PR-Codex-Feature-Fold\docs\INSTALL_FOR_AI.md`
-- `D:\Max\Projects\Dev\PR-Codex-Feature-Fold\docs\PRD.md`
-- `D:\Max\Projects\Dev\PR-Codex-Feature-Fold\docs\RELEASE_NOTES.md`
 - `D:\Max\Projects\Dev\PR-Codex-Feature-Fold\docs\UNINSTALL_FOR_AI.md`
-- `D:\Max\Projects\Dev\PR-Codex-Feature-Fold\docs\CHANGELOG-zh.md`
-- `D:\Max\Projects\Dev\PR-Codex-Feature-Fold\docs\CHANGELOG.md`
+- `D:\Max\Projects\Dev\PR-Codex-Feature-Fold\docs\AI_OPERATOR_MANUAL.md`
+- `D:\Max\Projects\Dev\PR-Codex-Feature-Fold\docs\Files\PRD.md`
+- `D:\Max\Projects\Dev\PR-Codex-Feature-Fold\docs\Files\SDD.md`
+- `D:\Max\Projects\Dev\PR-Codex-Feature-Fold\docs\Files\RELEASE_NOTES.md`
+- `D:\Max\Projects\Dev\PR-Codex-Feature-Fold\docs\Files\CHANGELOG-zh.md`
+- `D:\Max\Projects\Dev\PR-Codex-Feature-Fold\docs\Files\CHANGELOG.md`
 - `D:\Max\Projects\Dev\PR-Codex-Feature-Fold\docs\plans\2026-01-24-workflow-fold-implementation-plan.md`
+- `D:\Max\Projects\Dev\PR-Codex-Feature-Fold\docs\patch-profiles\openai.chatgpt\0.4.66-win32-x64\MANIFEST.json`
+- `D:\Max\Projects\Dev\PR-Codex-Feature-Fold\docs\patch-profiles\openai.chatgpt\0.4.66-win32-x64\INJECTION_host_extension.js.txt`
+- `D:\Max\Projects\Dev\PR-Codex-Feature-Fold\docs\patch-profiles\openai.chatgpt\0.4.66-win32-x64\INJECTION_webview_index.js.txt`
+- `D:\Max\Projects\Dev\PR-Codex-Feature-Fold\docs\patch-profiles\openai.chatgpt\0.4.66-win32-x64\INJECTION_zh-CN.js.txt`
 - `D:\Max\Projects\Dev\PR-Codex-Feature-Fold\package.json`
 - `D:\Max\Projects\Dev\PR-Codex-Feature-Fold\tools\workflow-fold\apply.mjs`
+- `D:\Max\Projects\Dev\PR-Codex-Feature-Fold\tools\workflow-fold\inspect.mjs`
 - `D:\Max\Projects\Dev\PR-Codex-Feature-Fold\tools\workflow-fold\patcher.mjs`
 - `D:\Max\Projects\Dev\PR-Codex-Feature-Fold\tools\workflow-fold\patcher.test.mjs`
 
@@ -34,4 +41,3 @@
   - Backup: `C:\Users\Max\.vscode\extensions\openai.chatgpt-0.4.66-win32-x64\webview\assets\index-C1sE4o1g.js.bak`
 - `C:\Users\Max\.vscode\extensions\openai.chatgpt-0.4.66-win32-x64\webview\assets\zh-CN-0bObk2T8.js`
   - Backup: `C:\Users\Max\.vscode\extensions\openai.chatgpt-0.4.66-win32-x64\webview\assets\zh-CN-0bObk2T8.js.bak`
-

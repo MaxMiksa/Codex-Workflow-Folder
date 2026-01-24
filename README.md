@@ -34,50 +34,12 @@ A small patch-based add-on that folds the Codex VS Code extension’s pre-final 
 
 ### Install Prompt (give to AI)
 ```text
-You are an AI coding assistant running locally on my Windows machine.
-
-Goal: install Codex Folding (Workflow folding) for the Codex VS Code extension.
-
-Constraints:
-- Do not ask for approvals; run commands directly.
-- Use UTF-8 without BOM for any text files you create/modify.
-- Create backups of any modified VS Code extension files (keep *.bak).
-
-Steps:
-1) Clone this repo and open it as your working directory:
-   `git clone https://github.com/MaxMiksa/Codex-Folding.git`
-2) Run: `npm test`
-3) Run: `node tools/workflow-fold/inspect.mjs`
-4) Apply the patch: `npm run apply`
-5) Verify idempotence: `npm run verify`
-6) Tell me to edit `C:\Users\<ME>\.codex\config.toml` and set:
-   `codex.workflow.collapseByDefault = "collapse"`
-7) Tell me to restart VS Code.
-8) Output the absolute paths of modified files and their backups.
-9) Also save a local copy of this manual for me:
-   `docs/AI_OPERATOR_MANUAL.md`
+Strictly follow https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/INSTALL_FOR_AI.md to install this feature. Do not improvise.
 ```
 
 ### Uninstall Prompt (give to AI)
 ```text
-You are an AI coding assistant running locally on my Windows machine.
-
-Goal: uninstall Codex Folding (restore original Codex VS Code extension files).
-
-Constraints:
-- Restore from existing *.bak backups created during install.
-- Do not delete backups; only restore originals.
-
-Steps:
-1) Find the installed extension directory under:
-   `%USERPROFILE%\.vscode\extensions\openai.chatgpt-*`
-2) Restore these files from their `.bak` backups if present:
-   - `out\extension.js`
-   - `webview\assets\index-*.js` (the active index bundle referenced by `webview\index.html`)
-   - `webview\assets\zh-CN-*.js`
-3) Verify that `CODEX_WORKFLOW_FOLD_PATCH` and `codex-workflow-collapse` are gone.
-4) Tell me to restart VS Code.
-5) Output the absolute paths restored.
+Strictly follow https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/UNINSTALL_FOR_AI.md to uninstall this feature. Do not improvise.
 ```
 
 <details>

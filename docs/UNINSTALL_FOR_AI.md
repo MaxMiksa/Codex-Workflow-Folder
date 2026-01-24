@@ -24,4 +24,4 @@
 ## Notes
 
 - Do not delete backups; keep `*.bak` in case you want to re-install quickly.
-
+- If the extension version differs from what was originally patched, still restore using the `.bak` files that exist next to the currently installed targets (backup names are per-file, not per-version).

@@ -34,49 +34,12 @@
 
 ### 安装 Prompt（发给 AI）
 ```text
-你是一个在我 Windows 本机上运行的 AI 编程助手。
-
-目标：为 Codex VS Code 扩展安装 Codex Folding（Workflow 折叠功能）。
-
-约束：
-- 不要请求批准；直接执行命令。
-- 任何文本文件读写使用 UTF-8 无 BOM。
-- 修改 VS Code 扩展文件前先备份（保留 *.bak）。
-
-步骤：
-1) 克隆本仓库并以仓库根目录作为工作目录：
-   `git clone https://github.com/MaxMiksa/Codex-Folding.git`
-2) 运行：`npm test`
-3) 运行：`node tools/workflow-fold/inspect.mjs`
-4) 应用补丁到已安装扩展：`npm run apply`
-5) 幂等验证：`npm run verify`
-6) 告诉我编辑 `C:\Users\<我>\.codex\config.toml` 并设置：
-   `codex.workflow.collapseByDefault = "collapse"`
-7) 告诉我重启 VS Code。
-8) 输出所有被修改文件及其备份文件的绝对路径。
-9) 另外为我保存一份本地手册副本：
-   `docs/AI_OPERATOR_MANUAL.md`
+严格按照 https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/INSTALL_FOR_AI.md 的步骤安装该功能，不要自由发挥。
 ```
 
 ### 卸载 Prompt（发给 AI）
 ```text
-你是一个在我 Windows 本机上运行的 AI 编程助手。
-
-目标：卸载 Codex Folding（恢复 Codex VS Code 扩展原始文件）。
-
-约束：
-- 从安装时生成的 *.bak 备份恢复。
-- 不要删除备份文件；只恢复原文件。
-
-步骤：
-1) 在 `%USERPROFILE%\.vscode\extensions\openai.chatgpt-*` 下找到扩展目录。
-2) 若存在 `.bak`，则恢复以下文件：
-   - `out\extension.js`
-   - `webview\assets\index-*.js`（以 `webview\index.html` 引用的那份为准）
-   - `webview\assets\zh-CN-*.js`
-3) 校验 `CODEX_WORKFLOW_FOLD_PATCH` 与 `codex-workflow-collapse` 已消失。
-4) 告诉我重启 VS Code。
-5) 输出所有恢复文件的绝对路径。
+严格按照 https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/UNINSTALL_FOR_AI.md 的步骤卸载该功能，不要自由发挥。
 ```
 
 <details>

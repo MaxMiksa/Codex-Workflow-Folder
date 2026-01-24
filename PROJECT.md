@@ -119,9 +119,9 @@ Workflow 内包含“最终回答之前的所有过程内容”，包括但不�
 - 远程仓库：`https://github.com/MaxMiksa/Codex-Folding`
 - Release 页面：`https://github.com/MaxMiksa/Codex-Folding/releases/tag/v0.5.0`
 - 变更记录与发布说明（对外可追踪版本）：
-  - `docs/CHANGELOG-zh.md`
-  - `docs/CHANGELOG.md`
-  - `docs/RELEASE_NOTES.md`
+  - `docs/Files/CHANGELOG-zh.md`
+  - `docs/Files/CHANGELOG.md`
+  - `docs/Files/RELEASE_NOTES.md`
 - 给 AI 的安装/卸载操作指引：
   - `docs/INSTALL_FOR_AI.md`
   - `docs/UNINSTALL_FOR_AI.md`

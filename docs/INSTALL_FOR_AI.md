@@ -20,6 +20,7 @@
      - Prints the installed extension folder name (`openai.chatgpt-...`)
      - Prints the active webview bundle (`webview/assets/index-*.js`)
      - Prints whether a matching profile exists under `docs/patch-profiles/openai.chatgpt/<version>/` (preferred)
+     - Prints anchor checks (so the AI can decide whether our patch logic is likely reusable)
 
 3. Apply patch (creates `*.bak` backups once)
    - Command: `npm run apply`

@@ -59,7 +59,7 @@
 ### Round 7（release-ai：发布 v0.5.0 并推送 GitHub）
 - 版本：`v0.5.0`
 - 补齐 release-ai 产物（对外可追踪版本放在 `docs/`）：
-  - `docs/CHANGELOG-zh.md` / `docs/CHANGELOG.md` / `docs/RELEASE_NOTES.md` / `docs/PRD.md`
+  - `docs/Files/CHANGELOG-zh.md` / `docs/Files/CHANGELOG.md` / `docs/Files/RELEASE_NOTES.md` / `docs/Files/PRD.md`
   - 安装/卸载指引：`docs/INSTALL_FOR_AI.md`、`docs/UNINSTALL_FOR_AI.md`
   - 改动清单（绝对路径）：`docs/FILES_CHANGED_ABSOLUTE.md`
 - README：`README.md` / `README-zh.md` 已写明给 AI 的安装/卸载 prompt（面向“让 AI 复刻安装操作”）。
