@@ -54,7 +54,7 @@ Do not clone. Use the remote scripts only:
   - `webview\\assets\\index-*.js` (the active bundle referenced by `webview\\index.html`)
   - `webview\\assets\\zh-CN-*.js`
 - Codex config:
-  - `%USERPROFILE%\\.codex\\config.toml` (adds comments + sets `codex.workflow.collapseByDefault = "collapse"` during install)
+  - `%USERPROFILE%\\.codex\\config.toml` (install adds comments + sets `codex.workflow.collapseByDefault = "collapse"`; uninstall removes the key line so default becomes `"disable"`)
 
 ## Verification markers (for AI checks)
 

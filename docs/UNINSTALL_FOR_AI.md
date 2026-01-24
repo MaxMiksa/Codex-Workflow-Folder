@@ -40,4 +40,4 @@
 ## Notes
 
 - This uninstall does NOT delete `*.bak` backups.
-- The config key in `%USERPROFILE%\\.codex\\config.toml` is left as-is (safe to keep); uninstall is defined as “restore patched extension files”.
+- The uninstall script removes `codex.workflow.collapseByDefault = ...` from `%USERPROFILE%\\.codex\\config.toml` (default behavior is `"disable"` when missing).

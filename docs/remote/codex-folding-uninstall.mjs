@@ -70,6 +70,21 @@ async function restoreFromBackup(filePath) {
   return { restored: true, backupPath };
 }
 
+async function removeCollapseConfigKey() {
+  const configPath = path.join(os.homedir(), ".codex", "config.toml");
+  if (!(await fileExists(configPath))) return { changed: false, configPath };
+
+  const before = await fs.readFile(configPath, "utf8");
+  const lineRegex =
+    /^\s*codex\.workflow\.collapseByDefault\s*=\s*"(collapse|expand|disable)"\s*[\r\n]+/gim;
+  let after = before.replace(lineRegex, "");
+  after = after.replace(/\n{3,}/g, "\n\n");
+
+  if (after === before) return { changed: false, configPath };
+  await fs.writeFile(configPath, after, "utf8");
+  return { changed: true, configPath };
+}
+
 async function main() {
   const extDir = await findLatestOpenAiChatgptExtensionDir();
   log(`Extension: ${extDir}`);
@@ -105,6 +120,13 @@ async function main() {
     }
   }
 
+  const config = await removeCollapseConfigKey();
+  if (config.changed) {
+    log(`Config updated (removed key): ${config.configPath}`);
+  } else {
+    log(`Config unchanged: ${config.configPath}`);
+  }
+
   log("");
   log("Next step: restart VS Code to make the change take effect.");
 }
@@ -112,4 +134,3 @@ async function main() {
 await main().catch((err) => {
   die(`Uninstall failed: ${err?.stack || err}`);
 });
-
