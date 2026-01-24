@@ -80,3 +80,4 @@ If the installed `openai.chatgpt` version is not exactly what this repo was test
    - If patch logic cannot be reused (anchors missing / structure materially different), STOP and explain what differs and what would be required (e.g. pin extension version or create a new patch profile).
 
 
+

@@ -62,3 +62,4 @@
 3. Restart VS Code: the extension/webview assets are loaded at runtime; restart is the simplest and most reliable way to pick up patched artifacts and config.
 
 
+
