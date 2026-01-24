@@ -1,112 +1,75 @@
 # Codex Folding — AI Operator Manual (Single Source of Truth)
 
-This manual is designed for an AI agent to perform a deterministic install/uninstall on Windows with minimal guesswork.
+This manual is written for an AI agent to perform a deterministic install/uninstall on Windows with minimal guesswork.
 
-## Goal
+## What this does (context for AI)
 
-Install **Workflow folding** into the Codex VS Code extension (`openai.chatgpt`) so that each turn shows:
+It folds *all pre-final process items* (thinking/tool calls/tool output/status/error) into a per-turn `Workflow` expandable row, so the final answer stays clean. When expanded, the content renders exactly as upstream (no extra UI changes besides the `Workflow` row).
+
+## Canonical URLs (remote-first, no clone)
+
+- Manual (this file): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/main/docs/AI_OPERATOR_MANUAL.md`
+- Install guide: `https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/INSTALL_FOR_AI.md`
+- Uninstall guide: `https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/UNINSTALL_FOR_AI.md`
+- Remote install script: `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/main/docs/remote/codex-folding-install.mjs`
+- Remote uninstall script: `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/main/docs/remote/codex-folding-uninstall.mjs`
+
+## Goal / Scope (strict)
+
+Per turn (per user message), the UI becomes:
 1) user message (unchanged)
 2) `Workflow` folding row (new)
 3) final answer (unchanged)
 
-All pre-final process items (reasoning/tool calls/tool output/status/error items) must be inside the `Workflow` fold.
+Rule: “Workflow” must contain everything before the final answer (reasoning/tool calls/tool output/status/errors). It is acceptable to occasionally show an empty `Workflow`.
 
 ## Preconditions
 
-- Windows
+- Windows + PowerShell
 - VS Code installed
-- Codex extension installed: Publisher `OpenAI`, Extension id `openai.chatgpt`
-- Node.js available (no dependencies required for this repo’s scripts)
+- Codex extension installed (Publisher: OpenAI, Extension id: `openai.chatgpt`)
+- Node.js available in PATH
 
-## Parameters (config)
+## Parameters (config.toml)
 
-- Config file: `%USERPROFILE%\.codex\config.toml`
+- Config file: `%USERPROFILE%\\.codex\\config.toml`
 - Key: `codex.workflow.collapseByDefault`
 - Values:
   - `"collapse"`: show Workflow, default collapsed
   - `"expand"`: show Workflow, default expanded
   - `"disable"`: disable feature (upstream behavior)
-- Default: missing key is treated as `"disable"`
-- Note: VS Code restart is required after config changes.
+- Default behavior: missing key is treated as `"disable"`
+- Restart: VS Code restart is required after config changes
 
-## Install Steps (deterministic)
+## Install / Uninstall (deterministic)
 
-1. Clone repo
-   - `git clone https://github.com/MaxMiksa/Codex-Folding.git`
-   - `cd Codex-Folding`
+Do not clone. Use the remote scripts only:
+- Install: download + run `codex-folding-install.mjs` (patches 3 files + creates `*.bak` + writes config comment + saves this manual for the user)
+- Uninstall: download + run `codex-folding-uninstall.mjs` (restores from `*.bak`)
 
-2. Run unit tests
-   - `npm test`
+## What gets modified on the user machine (strict)
 
-3. Inspect local environment & compatibility
-   - Run: `node tools/workflow-fold/inspect.mjs`
-   - The inspector must:
-     - detect installed extension dir under `%USERPROFILE%\.vscode\extensions\openai.chatgpt-*`
-     - read extension `package.json` for version (if available)
-     - find the active webview bundle referenced by `webview/index.html`
-     - report whether there is a matching profile under `docs/patch-profiles/openai.chatgpt/<version>/`
+- Installed extension build artifacts (plus `*.bak` backups):
+  - `out\\extension.js`
+  - `webview\\assets\\index-*.js` (the active bundle referenced by `webview\\index.html`)
+  - `webview\\assets\\zh-CN-*.js`
+- Codex config:
+  - `%USERPROFILE%\\.codex\\config.toml` (adds comments + sets `codex.workflow.collapseByDefault = "collapse"` during install)
 
-4. Apply patch (creates backups once)
-   - `npm run apply`
-   - Must create backups `*.bak` next to each modified file (only if missing).
+## Verification markers (for AI checks)
 
-5. Configure default collapse
-   - Ensure `%USERPROFILE%\.codex\config.toml` contains:
-     - `codex.workflow.collapseByDefault = "collapse"`
-
-6. Restart VS Code
-
-7. Verify install
-   - `npm run verify`
-   - Confirm:
-     - `Workflow` appears per turn
-     - timer updates while running
-     - expanded workflow preserves original content rendering
-
-## Uninstall Steps (deterministic)
-
-1. Locate the installed extension directory:
-   - `%USERPROFILE%\.vscode\extensions\openai.chatgpt-*`
-
-2. Restore originals from backups (do not delete backups)
-   - Restore:
-     - `out\extension.js` from `out\extension.js.bak`
-     - active `webview\assets\index-*.js` from its `.bak`
-     - `webview\assets\zh-CN-*.js` from its `.bak`
-
-3. Restart VS Code
-
-4. Verify uninstall
-   - Ensure markers are absent:
-     - `CODEX_WORKFLOW_FOLD_PATCH`
-     - `codex-workflow-collapse`
-
-## What files are modified (installed extension)
-
-The patch touches exactly 3 installed files (plus backups):
-- `out/extension.js`
-- `webview/assets/index-*.js` (the entry referenced by `webview/index.html`)
-- `webview/assets/zh-CN-*.js`
-
-The exact injected snippets are documented here:
-- `docs/patch-profiles/openai.chatgpt/0.4.66-win32-x64/INJECTION_host_extension.js.txt`
-- `docs/patch-profiles/openai.chatgpt/0.4.66-win32-x64/INJECTION_webview_index.js.txt`
-- `docs/patch-profiles/openai.chatgpt/0.4.66-win32-x64/INJECTION_zh-CN.js.txt`
-
-For absolute path examples and the author machine’s recorded changes:
-- `docs/FILES_CHANGED_ABSOLUTE.md`
+- Patched host file must include: `codex-workflow-collapse`
+- Patched webview file must include: `CODEX_WORKFLOW_FOLD_PATCH`
+- Patched `zh-CN` locale file must include: `codex.workflow.label`
 
 ## Version mismatch strategy (required AI behavior)
 
-If the user’s installed `openai.chatgpt` extension version does not match a profile folder:
+If the installed `openai.chatgpt` version is not exactly what this repo was tested on:
 
-1. Inspect and compare (no modifications yet)
-   - Run `node tools/workflow-fold/inspect.mjs` and read:
-     - folder name, extension version, active webview bundle
-     - whether the key anchors exist in the target files
+1. Inspect local installed files (read-only)
+   - Find the active extension folder under `%USERPROFILE%\\.vscode\\extensions\\openai.chatgpt-*`
+   - Find the active webview entry bundle referenced by `webview\\index.html`
+   - Read the three target files and see whether the patch anchors can be applied (the installer script will report failures)
 2. Decide:
-   - If anchors are present and semantics match the profile’s injection docs, proceed with `npm run apply`.
-   - If anchors are missing or target code structure differs materially, STOP and report:
-     - which anchor(s) are missing
-     - what changed in the target file(s)
-     - recommendation: pin extension version or add a new profile under `docs/patch-profiles/openai.chatgpt/<version>/`
+   - If the same patch logic can be applied safely (anchors found; verification markers appear after patch), proceed.
+   - If patch logic cannot be reused (anchors missing / structure materially different), STOP and explain what differs and what would be required (e.g. pin extension version or create a new patch profile).

@@ -1,27 +1,43 @@
-# Uninstall Guide (For AI Operators)
+# Uninstall Guide (For AI Operators) — Remote-First (No Clone)
 
-> Goal: uninstall “Workflow folding” by restoring original installed extension files from the `*.bak` backups created during install.
+> Goal: uninstall “Workflow folding” from the installed Codex VS Code extension (`openai.chatgpt`) on Windows by restoring original files from `*.bak` backups (created during install).
 
-## Steps
+## Canonical URLs (this is the source of truth)
 
-1. Locate the installed extension directory
-   - Base: `%USERPROFILE%\.vscode\extensions\`
-   - Target pattern: `openai.chatgpt-*`
+- This file: `https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/UNINSTALL_FOR_AI.md`
+- Remote uninstall script (single file): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/main/docs/remote/codex-folding-uninstall.mjs`
+- Manual (for user to save): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/main/docs/AI_OPERATOR_MANUAL.md`
 
-2. Restore originals from backups (if present)
-   - Restore `out\extension.js` from `out\extension.js.bak`
-   - Restore the active webview bundle referenced by `webview\index.html`:
-     - Example: `webview\assets\index-xxxx.js` from `webview\assets\index-xxxx.js.bak`
-   - Restore `webview\assets\zh-CN-*.js` from `webview\assets\zh-CN-*.js.bak`
+## Preconditions
 
-3. Verify uninstall
-   - Confirm these markers are absent in the restored files:
-     - `CODEX_WORKFLOW_FOLD_PATCH`
-     - `codex-workflow-collapse`
+- Windows + PowerShell
+- VS Code installed
+- Codex extension installed (Publisher: OpenAI, Extension id: `openai.chatgpt`)
+- Node.js available in PATH
 
-4. Restart VS Code
+## Strict Rules (anti-improvisation)
+
+- Do NOT clone the repo.
+- Do NOT “re-implement” uninstall logic.
+- Only download and run the provided remote script.
+
+## Steps (what to do)
+
+1. Download the remote uninstall script
+   - `Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/main/docs/remote/codex-folding-uninstall.mjs" -OutFile "$env:TEMP\\codex-folding-uninstall.mjs"`
+
+2. Run uninstall script (restores installed extension artifacts from `*.bak`)
+   - `node "$env:TEMP\\codex-folding-uninstall.mjs"`
+   - Expected behavior:
+     - Finds the installed extension folder under `%USERPROFILE%\\.vscode\\extensions\\openai.chatgpt-*`
+     - Restores exactly 3 files from their `*.bak` backups (if present)
+     - Verifies patch markers are absent after restore
+     - Prints absolute paths of restored files
+
+3. Restart VS Code
+   - Required for the extension webview to pick up restored files.
 
 ## Notes
 
-- Do not delete backups; keep `*.bak` in case you want to re-install quickly.
-- If the extension version differs from what was originally patched, still restore using the `.bak` files that exist next to the currently installed targets (backup names are per-file, not per-version).
+- This uninstall does NOT delete `*.bak` backups.
+- The config key in `%USERPROFILE%\\.codex\\config.toml` is left as-is (safe to keep); uninstall is defined as “restore patched extension files”.

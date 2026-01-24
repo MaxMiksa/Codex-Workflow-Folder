@@ -1,50 +1,62 @@
-# Install Guide (For AI Operators)
+# Install Guide (For AI Operators) — Remote-First (No Clone)
 
-> Goal: install “Workflow folding” into the installed Codex VS Code extension (`openai.chatgpt`) on Windows by applying an idempotent patch with backups.
+> Goal: install “Workflow folding” into the installed Codex VS Code extension (`openai.chatgpt`) on Windows by running a remote, deterministic patch script with backups.
+
+**What this does (context for AI):** It folds *all pre-final process items* (thinking/tool calls/tool output/status/error) into a per-turn `Workflow` expandable row, so the final answer stays clean.
+
+## Canonical URLs (this is the source of truth)
+
+- This file: `https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/INSTALL_FOR_AI.md`
+- Remote install script (single file): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/main/docs/remote/codex-folding-install.mjs`
+- Remote uninstall script (single file): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/main/docs/remote/codex-folding-uninstall.mjs`
+- Manual (for user to save): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/main/docs/AI_OPERATOR_MANUAL.md`
 
 ## Preconditions
 
+- Windows + PowerShell
 - VS Code installed
 - Codex extension installed (Publisher: OpenAI, Extension id: `openai.chatgpt`)
 - Node.js available in PATH
 
-## Steps
+## Strict Rules (anti-improvisation)
 
-1. Run tests
-   - Command: `npm test`
-   - Expected: PASS
+- Do NOT clone the repo.
+- Do NOT “re-implement” patch logic.
+- Only download and run the provided remote script(s).
+- If the script reports incompatible anchors, STOP and explain what is different.
 
-2. Inspect compatibility (recommended)
-   - Command: `node tools/workflow-fold/inspect.mjs`
-   - Expected:
-     - Prints the installed extension folder name (`openai.chatgpt-...`)
-     - Prints the active webview bundle (`webview/assets/index-*.js`)
-     - Prints whether a matching profile exists under `docs/patch-profiles/openai.chatgpt/<version>/` (preferred)
-     - Prints anchor checks (so the AI can decide whether our patch logic is likely reusable)
+## Steps (what to do)
 
-3. Apply patch (creates `*.bak` backups once)
-   - Command: `npm run apply`
-   - Expected: outputs `PATCHED:` or `OK:` lines, no errors
+1. Download the remote install script
+   - Save to a temporary folder:
+     - `Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/main/docs/remote/codex-folding-install.mjs" -OutFile "$env:TEMP\\codex-folding-install.mjs"`
 
-4. Verify idempotence (no changes on second run)
-   - Command: `npm run verify`
+2. Run install script (patches extension + writes config hint)
+   - `node "$env:TEMP\\codex-folding-install.mjs"`
+   - Expected behavior:
+     - Finds the installed extension folder under `%USERPROFILE%\\.vscode\\extensions\\openai.chatgpt-*`
+     - Checks key anchors in the three target files (to decide compatibility)
+     - Patches exactly 3 files and creates `*.bak` backups (only once)
+     - Writes/updates `%USERPROFILE%\\.codex\\config.toml` with:
+       - a TOML comment block explaining `"collapse" | "expand" | "disable"`
+       - `codex.workflow.collapseByDefault = "collapse"`
+     - Downloads this project’s AI manual and saves it to a user-friendly location (prefer `Downloads`) so the user can keep it
+     - Prints absolute paths of modified files and backups
 
-5. Configure default behavior
-   - Edit `C:\Users\<USER>\.codex\config.toml`
-   - Set:
-     - `codex.workflow.collapseByDefault = "collapse"`
-   - Values:
-     - `"collapse"`: show Workflow and default collapsed
-     - `"expand"`: show Workflow and default expanded
-     - `"disable"`: disable feature (upstream behavior)
+3. Restart VS Code
+   - Required for the extension webview to pick up the config change.
 
-6. Restart VS Code
+## What gets modified on the user machine
 
-## What gets modified
+- Installed extension build artifacts (plus `*.bak` backups):
+  - `out\\extension.js`
+  - `webview\\assets\\index-*.js` (the active bundle referenced by `webview\\index.html`)
+  - `webview\\assets\\zh-CN-*.js`
+- Codex config:
+  - `%USERPROFILE%\\.codex\\config.toml`
 
-- The script patches the installed extension build artifacts:
-  - `out\extension.js` (injects a `<meta name="codex-workflow-collapse"...>` based on config)
-  - `webview\assets\index-*.js` (injects Workflow folding behavior and renderer)
-  - `webview\assets\zh-CN-*.js` (adds i18n strings)
+## Why each step exists (purpose)
 
-See `docs/FILES_CHANGED_ABSOLUTE.md` for absolute paths on the author machine.
+1. Download script: ensures “no-clone” and eliminates ambiguity about what code to run.
+2. Run script: performs deterministic patching (3 files), creates backups for safe rollback, and writes the config key + comments so users can understand and modify the behavior later.
+3. Restart VS Code: the extension/webview assets are loaded at runtime; restart is the simplest and most reliable way to pick up patched artifacts and config.
