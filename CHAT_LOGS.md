@@ -55,3 +55,12 @@
   - `node --test tools/workflow-fold/patcher.test.mjs` 通过
   - `node tools/workflow-fold/apply.mjs --dry-run --verify` 显示无需重复修改（幂等）
 - 计划文档：新增 `docs/plans/2026-01-24-workflow-fold-implementation-plan.md`
+
+### Round 7（release-ai：发布 v0.5.0 并推送 GitHub）
+- 版本：`v0.5.0`
+- 补齐 release-ai 产物（对外可追踪版本放在 `docs/`）：
+  - `docs/CHANGELOG-zh.md` / `docs/CHANGELOG.md` / `docs/RELEASE_NOTES.md` / `docs/PRD.md`
+  - 安装/卸载指引：`docs/INSTALL_FOR_AI.md`、`docs/UNINSTALL_FOR_AI.md`
+  - 改动清单（绝对路径）：`docs/FILES_CHANGED_ABSOLUTE.md`
+- README：`README.md` / `README-zh.md` 已写明给 AI 的安装/卸载 prompt（面向“让 AI 复刻安装操作”）。
+- Git：已 `git init`，提交并打 tag，推送至 `https://github.com/MaxMiksa/Codex-Folding`，并创建 GitHub Release：`v0.5.0`
