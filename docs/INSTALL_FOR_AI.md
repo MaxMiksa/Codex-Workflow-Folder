@@ -7,8 +7,8 @@
 ## Canonical URLs (this is the source of truth)
 
 - This file: `https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/INSTALL_FOR_AI.md`
-- Remote install script (single file, pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/ac40202/docs/remote/codex-folding-install.mjs`
-- Remote uninstall script (single file, pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/ac40202/docs/remote/codex-folding-uninstall.mjs`
+- Remote install script (single file, pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/4824d70/docs/remote/codex-folding-install.mjs`
+- Remote uninstall script (single file, pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/4824d70/docs/remote/codex-folding-uninstall.mjs`
 - Manual (for user to save): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/main/docs/AI_OPERATOR_MANUAL.md`
 
 ## Preconditions
@@ -29,7 +29,7 @@
 
 1. Download the remote install script
    - Save to a temporary folder:
-     - `Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/ac40202/docs/remote/codex-folding-install.mjs" -OutFile "$env:TEMP\\codex-folding-install.mjs"`
+     - `Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/4824d70/docs/remote/codex-folding-install.mjs" -OutFile "$env:TEMP\\codex-folding-install.mjs"`
 
 2. Run install script (patches extension + writes config hint)
    - `node "$env:TEMP\\codex-folding-install.mjs"`
@@ -60,3 +60,4 @@
 1. Download script: ensures “no-clone” and eliminates ambiguity about what code to run.
 2. Run script: performs deterministic patching (3 files), creates backups for safe rollback, and writes the config key + comments so users can understand and modify the behavior later.
 3. Restart VS Code: the extension/webview assets are loaded at runtime; restart is the simplest and most reliable way to pick up patched artifacts and config.
+

@@ -11,8 +11,8 @@ It folds *all pre-final process items* (thinking/tool calls/tool output/status/e
 - Manual (this file): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/main/docs/AI_OPERATOR_MANUAL.md`
 - Install guide: `https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/INSTALL_FOR_AI.md`
 - Uninstall guide: `https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/UNINSTALL_FOR_AI.md`
-- Remote install script (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/ac40202/docs/remote/codex-folding-install.mjs`
-- Remote uninstall script (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/ac40202/docs/remote/codex-folding-uninstall.mjs`
+- Remote install script (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/4824d70/docs/remote/codex-folding-install.mjs`
+- Remote uninstall script (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/4824d70/docs/remote/codex-folding-uninstall.mjs`
 
 ## Goal / Scope (strict)
 
@@ -78,3 +78,4 @@ If the installed `openai.chatgpt` version is not exactly what this repo was test
 2. Decide:
    - If the same patch logic can be applied safely (anchors found; verification markers appear after patch), proceed.
    - If patch logic cannot be reused (anchors missing / structure materially different), STOP and explain what differs and what would be required (e.g. pin extension version or create a new patch profile).
+
