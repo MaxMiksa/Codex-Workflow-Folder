@@ -4,8 +4,8 @@
 // TDD note: Implementations are added after tests.
 
 export function patchExtensionHostJs(source) {
-  const v3Marker = "CODEX_WORKFLOW_FOLD_HOST_V3";
-  if (source.includes(v3Marker)) return source;
+  const v4Marker = "CODEX_WORKFLOW_FOLD_HOST_V4";
+  if (source.includes(v4Marker)) return source;
 
   const oldInject =
     'let wf="disable";try{let d=wt({preferWsl:Bt()}),f=MB.join(d,"config.toml"),txt=await jy.promises.readFile(f,"utf-8");let m=txt.match(/^\\s*codex\\.workflow\\.collapseByDefault\\s*=\\s*\"(collapse|expand|disable)\"\\s*$/m);m&&(wf=m[1])}catch{}l=l.replace("</head>",`<meta name="codex-workflow-collapse" content="${wf}">\\n</head>`);';
@@ -13,12 +13,16 @@ export function patchExtensionHostJs(source) {
   const v2Inject =
     '/* CODEX_WORKFLOW_FOLD_HOST_V2 */let wf="disable";try{let d=wt({preferWsl:Bt()}),f=MB.join(d,"config.toml"),txt=await jy.promises.readFile(f,"utf-8");let m=txt.match(/^\\s*codex\\.workflow\\.collapseByDefault\\s*=\\s*\"(collapse|expand|disable)\"\\s*$/m);m&&(wf=m[1]);if(wf==="disable"){let inWf=!1;for(let ln of txt.split(/\\r?\\n/)){if(/^\\s*\\[codex\\.workflow\\]\\s*$/.test(ln)){inWf=!0;continue}if(inWf&&/^\\s*\\[/.test(ln))break;if(inWf){let mm=ln.match(/^\\s*collapseByDefault\\s*=\\s*\"(collapse|expand|disable)\"\\s*$/);mm&&(wf=mm[1])}}}}catch{}l=l.replace("</head>",`<meta name="codex-workflow-collapse" content=\"${wf}\">\\n</head>`);';
 
-  const inject =
+  const v3Inject =
     '/* CODEX_WORKFLOW_FOLD_HOST_V3 */let wf="disable";try{let read=async(pref)=>{let d=wt({preferWsl:pref}),f=MB.join(d,"config.toml"),txt=await jy.promises.readFile(f,"utf-8");let m=txt.match(/^\\s*codex\\.workflow\\.collapseByDefault\\s*=\\s*\"(collapse|expand|disable)\"\\s*(?:#.*)?$/m);m&&(wf=m[1]);if(wf==="disable"){let inWf=!1;for(let ln of txt.split(/\\r?\\n/)){if(/^\\s*\\[codex\\.workflow\\]\\s*$/.test(ln)){inWf=!0;continue}if(inWf&&/^\\s*\\[/.test(ln))break;if(inWf){let mm=ln.match(/^\\s*collapseByDefault\\s*=\\s*\"(collapse|expand|disable)\"\\s*(?:#.*)?$/);mm&&(wf=mm[1])}}}};await read(Bt());wf==="disable"&&await read(!1)}catch{}l=l.replace(\"</head>\",`<meta name=\"codex-workflow-collapse\" content=\"${wf}\">\\n</head>`);';
+
+  const inject =
+    '/* CODEX_WORKFLOW_FOLD_HOST_V4 */let wf="disable";try{let parse=(txt)=>{let m=txt.match(/^\\s*codex\\.workflow\\.collapseByDefault\\s*=\\s*\"(collapse|expand|disable)\"\\s*(?:#.*)?$/m);m&&(wf=m[1]);if(wf==="disable"){let inWf=!1;for(let ln of txt.split(/\\r?\\n/)){if(/^\\s*\\[codex\\.workflow\\]\\s*$/.test(ln)){inWf=!0;continue}if(inWf&&/^\\s*\\[/.test(ln))break;if(inWf){let mm=ln.match(/^\\s*collapseByDefault\\s*=\\s*\"(collapse|expand|disable)\"\\s*(?:#.*)?$/);mm&&(wf=mm[1])}}}};let read=async(pref)=>{let d=wt({preferWsl:pref}),f=MB.join(d,\"config.toml\"),txt=await jy.promises.readFile(f,\"utf-8\");parse(txt)};await read(Bt());wf===\"disable\"&&await read(!1);if(wf===\"disable\"&&typeof process!==\"undefined\"&&process.env&&process.env.USERPROFILE){let f=process.env.USERPROFILE+\"\\\\.codex\\\\config.toml\";parse(await jy.promises.readFile(f,\"utf-8\"))}}catch{}l=l.replace(\"</head>\",`<meta name=\"codex-workflow-collapse\" content=\"${wf}\">\\n</head>`);';
 
   if (source.includes("codex-workflow-collapse")) {
     if (source.includes(oldInject)) return source.replace(oldInject, inject);
     if (source.includes(v2Inject)) return source.replace(v2Inject, inject);
+    if (source.includes(v3Inject)) return source.replace(v3Inject, inject);
     throw new Error(
       "patchExtensionHostJs: already patched, but host patch variant is unknown (restore .bak and re-install)"
     );
