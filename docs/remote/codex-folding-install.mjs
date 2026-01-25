@@ -188,46 +188,7 @@ async function patchFile(filePath, patchFn) {
   return { changed: true, backupPath };
 }
 
-function configCommentBlock() {
-  return [
-    "# codex.workflow.collapseByDefault:",
-    '# - "collapse": show Workflow and default collapsed',
-    '# - "expand": show Workflow and default expanded',
-    '# - "disable": disable feature (upstream behavior)',
-    "",
-  ].join("\n");
-}
-
-async function ensureConfigCollapse() {
-  const codexDir = path.join(os.homedir(), ".codex");
-  const configPath = path.join(codexDir, "config.toml");
-  await fs.mkdir(codexDir, { recursive: true });
-
-  let txt = "";
-  if (await fileExists(configPath)) {
-    txt = await fs.readFile(configPath, "utf8");
-  }
-
-  const keyRegex =
-    /^(\s*codex\.workflow\.collapseByDefault\s*=\s*")(collapse|expand|disable)("\s*)$/m;
-  if (keyRegex.test(txt)) {
-    txt = txt.replace(keyRegex, `$1collapse$3`);
-  } else {
-    const block = configCommentBlock();
-    txt = (txt.trimEnd() + "\n\n" + block + 'codex.workflow.collapseByDefault = "collapse"\n').replace(
-      /^\s*\n+/,
-      ""
-    );
-  }
-
-  const marker = "# codex.workflow.collapseByDefault:";
-  if (!txt.includes(marker)) {
-    txt = configCommentBlock() + txt;
-  }
-
-  await fs.writeFile(configPath, txt, "utf8");
-  return configPath;
-}
+// Config is controlled via VS Code settings (recommended), not via ~/.codex/config.toml.
 
 async function maybeDownloadManual() {
   const url =
@@ -300,7 +261,6 @@ async function main() {
     }
   }
 
-  const configPath = await ensureConfigCollapse();
   const manual = await maybeDownloadManual();
 
   for (const r of results) {
@@ -311,7 +271,6 @@ async function main() {
       log(`OK: ${r.file}`);
     }
   }
-  log(`Config updated: ${configPath}`);
   if (manual.outPath) {
     log(`Manual saved: ${manual.outPath}`);
   } else {

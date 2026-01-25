@@ -32,19 +32,14 @@ Rule: “Workflow” must contain everything before the final answer (reasoning/
 
 ## Parameters (config.toml)
 
-- Config file: `%USERPROFILE%\\.codex\\config.toml`
+- Recommended setting location: VS Code `settings.json`
 - Key: `codex.workflow.collapseByDefault`
 - Values:
   - `"collapse"`: show Workflow, default collapsed
   - `"expand"`: show Workflow, default expanded
   - `"disable"`: disable feature (upstream behavior)
-- Accepted TOML forms (equivalent):
-  - Dotted key: `codex.workflow.collapseByDefault = "collapse"`
-  - Table form:
-    - `[codex.workflow]`
-    - `collapseByDefault = "collapse"`
-- Default behavior: missing key is treated as `"disable"`
-- Restart: VS Code restart is required after config changes
+- Default behavior: if unset, installer defaults to `"collapse"` (so the feature works without extra configuration)
+- Restart: VS Code restart is required after changes
 
 ## Install / Uninstall (deterministic)
 
@@ -58,8 +53,8 @@ Do not clone. Use the remote scripts only:
   - `out\\extension.js`
   - `webview\\assets\\index-*.js` (the active bundle referenced by `webview\\index.html`)
   - `webview\\assets\\zh-CN-*.js`
-- Codex config:
-  - `%USERPROFILE%\\.codex\\config.toml` (install adds comments + sets `codex.workflow.collapseByDefault = "collapse"`; uninstall removes the key line so default becomes `"disable"`)
+- VS Code settings:
+  - Optional: set `codex.workflow.collapseByDefault` to control behavior; uninstall does not modify settings.
 
 ## Verification markers (for AI checks)
 

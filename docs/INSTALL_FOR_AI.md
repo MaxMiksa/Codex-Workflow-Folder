@@ -37,9 +37,6 @@
      - Finds the installed extension folder under `%USERPROFILE%\\.vscode\\extensions\\openai.chatgpt-*`
      - Checks key anchors in the three target files (to decide compatibility)
      - Patches exactly 3 files and creates `*.bak` backups (only once)
-     - Writes/updates `%USERPROFILE%\\.codex\\config.toml` with:
-       - a TOML comment block explaining `"collapse" | "expand" | "disable"`
-       - `codex.workflow.collapseByDefault = "collapse"`
      - Downloads this project’s AI manual and saves it to a user-friendly location (prefer `Downloads`) so the user can keep it
      - Prints absolute paths of modified files and backups
 

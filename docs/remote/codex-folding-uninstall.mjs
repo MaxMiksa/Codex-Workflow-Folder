@@ -70,63 +70,7 @@ async function restoreFromBackup(filePath) {
   return { restored: true, backupPath };
 }
 
-async function removeCollapseConfigKey() {
-  const configPath = path.join(os.homedir(), ".codex", "config.toml");
-  if (!(await fileExists(configPath))) return { changed: false, configPath };
-
-  const before = await fs.readFile(configPath, "utf8");
-  const lines = before.split(/\r?\n/);
-  const out = [];
-  let inWf = false;
-  for (let i = 0; i < lines.length; i++) {
-    const ln = lines[i];
-    if (/^\s*\[codex\.workflow\]\s*$/.test(ln)) {
-      inWf = true;
-      out.push(ln);
-      continue;
-    }
-    if (inWf && /^\s*\[/.test(ln)) {
-      inWf = false;
-    }
-
-    if (
-      /^\s*codex\.workflow\.collapseByDefault\s*=\s*"(collapse|expand|disable)"\s*$/.test(
-        ln
-      )
-    ) {
-      continue;
-    }
-    if (
-      inWf &&
-      /^\s*collapseByDefault\s*=\s*"(collapse|expand|disable)"\s*$/.test(ln)
-    ) {
-      continue;
-    }
-    out.push(ln);
-  }
-
-  // Drop an empty [codex.workflow] section (header followed only by blanks).
-  const cleaned = [];
-  for (let i = 0; i < out.length; i++) {
-    const ln = out[i];
-    if (/^\s*\[codex\.workflow\]\s*$/.test(ln)) {
-      let j = i + 1;
-      while (j < out.length && /^\s*$/.test(out[j])) j++;
-      if (j === out.length || /^\s*\[/.test(out[j])) {
-        i = j - 1;
-        continue;
-      }
-    }
-    cleaned.push(ln);
-  }
-
-  let after = cleaned.join("\n");
-  after = after.replace(/\n{3,}/g, "\n\n").trimEnd() + "\n";
-
-  if (after === before) return { changed: false, configPath };
-  await fs.writeFile(configPath, after, "utf8");
-  return { changed: true, configPath };
-}
+// Config is controlled via VS Code settings, so uninstall does not touch ~/.codex/config.toml.
 
 async function main() {
   const extDir = await findLatestOpenAiChatgptExtensionDir();
@@ -161,13 +105,6 @@ async function main() {
         throw new Error(`Verify failed: marker still present in ${r.file}: ${m}`);
       }
     }
-  }
-
-  const config = await removeCollapseConfigKey();
-  if (config.changed) {
-    log(`Config updated (removed key): ${config.configPath}`);
-  } else {
-    log(`Config unchanged: ${config.configPath}`);
   }
 
   log("");
