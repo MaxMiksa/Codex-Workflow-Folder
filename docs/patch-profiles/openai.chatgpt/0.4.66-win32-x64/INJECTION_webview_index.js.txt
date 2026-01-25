@@ -19,7 +19,7 @@ Key behaviors:
   (injected by the host patch, based on VS Code settings; defaults to `"collapse"` if unset/invalid)
 
 Verification marker:
-- The patched file must contain the string: `CODEX_WORKFLOW_FOLD_PATCH_V9`
+- The patched file must contain the string: `CODEX_WORKFLOW_FOLD_PATCH_V10`
 
 Injected patch code is owned by this repo and can be reviewed in:
 - `tools/workflow-fold/patcher.mjs` (search for `CODEX_WORKFLOW_FOLD_PATCH`)
