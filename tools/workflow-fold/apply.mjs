@@ -113,8 +113,8 @@ async function main() {
     if (!host.includes("codex-workflow-collapse")) {
       throw new Error("Verify failed: host meta tag not present");
     }
-    if (!web.includes("CODEX_WORKFLOW_FOLD_PATCH_V7")) {
-      throw new Error("Verify failed: webview patch marker not present (V7)");
+    if (!web.includes("CODEX_WORKFLOW_FOLD_PATCH_V8")) {
+      throw new Error("Verify failed: webview patch marker not present (V8)");
     }
     if (!zh.includes("codex.workflow.label")) {
       throw new Error("Verify failed: zh-CN strings not present");
