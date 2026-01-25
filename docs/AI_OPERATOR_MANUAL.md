@@ -62,7 +62,7 @@ Do not clone. Use the remote scripts only:
 
 - Patched host file must include: `codex-workflow-collapse`
 - Patched webview file must include: `CODEX_WORKFLOW_FOLD_PATCH`
-- Patched webview file should include: `CODEX_WORKFLOW_FOLD_PATCH_V8` (matches UI tweaks: header bg/radius + status format)
+- Patched webview file should include: `CODEX_WORKFLOW_FOLD_PATCH_V9` (status text size + spacing tweak)
 - Patched `zh-CN` locale file must include: `codex.workflow.label`
 
 ## Version mismatch strategy (required AI behavior)
