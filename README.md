@@ -11,8 +11,8 @@
 A small patch-based add-on that folds the Codex VS Code extension’s pre-final “workflow” into a single expandable line, without changing the original rendering when expanded.
 
 <div align="center" style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
-  <img src="Presentation/demo1.png" height="600" alt="Workflow folding demo 1" />
-  <img src="Presentation/demo2.png" height="600" alt="Workflow folding demo 2" />
+  <img src="Presentation/demo1.png" height="660" alt="Workflow folding demo 1" />
+  <img src="Presentation/demo2.png" height="660" alt="Workflow folding demo 2" />
 </div>
 
 ## Features
