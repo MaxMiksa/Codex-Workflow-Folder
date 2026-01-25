@@ -11,10 +11,10 @@ It folds *all pre-final process items* (thinking/tool calls/tool output/status/e
 - Manual (this file): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/main/docs/AI_OPERATOR_MANUAL.md`
 - Install guide: `https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/INSTALL_FOR_AI.md`
 - Uninstall guide: `https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/UNINSTALL_FOR_AI.md`
-- Remote install script (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/v1.0.0/docs/remote/codex-folding-install.mjs`
-- Remote uninstall script (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/v1.0.0/docs/remote/codex-folding-uninstall.mjs`
-  - If `raw.githubusercontent.com` is blocked: `https://github.com/MaxMiksa/Codex-Folding/raw/v1.0.0/docs/remote/codex-folding-install.mjs`
-  - If `raw.githubusercontent.com` is blocked: `https://github.com/MaxMiksa/Codex-Folding/raw/v1.0.0/docs/remote/codex-folding-uninstall.mjs`
+- Remote install script (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/v1.1.0/docs/remote/codex-folding-install.mjs`
+- Remote uninstall script (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/v1.1.0/docs/remote/codex-folding-uninstall.mjs`
+  - If `raw.githubusercontent.com` is blocked: `https://github.com/MaxMiksa/Codex-Folding/raw/v1.1.0/docs/remote/codex-folding-install.mjs`
+  - If `raw.githubusercontent.com` is blocked: `https://github.com/MaxMiksa/Codex-Folding/raw/v1.1.0/docs/remote/codex-folding-uninstall.mjs`
 
 ## Goal / Scope (strict)
 
