@@ -11,10 +11,10 @@ It folds *all pre-final process items* (thinking/tool calls/tool output/status/e
 - Manual (this file): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/main/docs/AI_OPERATOR_MANUAL.md`
 - Install guide: `https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/INSTALL_FOR_AI.md`
 - Uninstall guide: `https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/UNINSTALL_FOR_AI.md`
-- Remote install script (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/v0.8.0/docs/remote/codex-folding-install.mjs`
-- Remote uninstall script (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/v0.8.0/docs/remote/codex-folding-uninstall.mjs`
-  - If `raw.githubusercontent.com` is blocked: `https://github.com/MaxMiksa/Codex-Folding/raw/v0.8.0/docs/remote/codex-folding-install.mjs`
-  - If `raw.githubusercontent.com` is blocked: `https://github.com/MaxMiksa/Codex-Folding/raw/v0.8.0/docs/remote/codex-folding-uninstall.mjs`
+- Remote install script (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/v1.0.0/docs/remote/codex-folding-install.mjs`
+- Remote uninstall script (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/v1.0.0/docs/remote/codex-folding-uninstall.mjs`
+  - If `raw.githubusercontent.com` is blocked: `https://github.com/MaxMiksa/Codex-Folding/raw/v1.0.0/docs/remote/codex-folding-install.mjs`
+  - If `raw.githubusercontent.com` is blocked: `https://github.com/MaxMiksa/Codex-Folding/raw/v1.0.0/docs/remote/codex-folding-uninstall.mjs`
 
 ## Goal / Scope (strict)
 
@@ -62,7 +62,7 @@ Do not clone. Use the remote scripts only:
 
 - Patched host file must include: `codex-workflow-collapse`
 - Patched webview file must include: `CODEX_WORKFLOW_FOLD_PATCH`
-- Patched webview file should include: `CODEX_WORKFLOW_FOLD_PATCH_V5` (fixes mapState return-shape compatibility)
+- Patched webview file should include: `CODEX_WORKFLOW_FOLD_PATCH_V7` (excludes plan items; improves UI + timer; fixes Done detection)
 - Patched `zh-CN` locale file must include: `codex.workflow.label`
 
 ## Version mismatch strategy (required AI behavior)

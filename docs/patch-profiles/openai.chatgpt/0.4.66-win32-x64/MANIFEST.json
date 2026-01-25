@@ -19,7 +19,7 @@
       "kind": "webview",
       "relativePath": "webview/assets/index-*.js",
       "backupSuffix": ".bak",
-      "verifyIncludes": ["CODEX_WORKFLOW_FOLD_PATCH_V5"]
+      "verifyIncludes": ["CODEX_WORKFLOW_FOLD_PATCH_V7"]
     },
     {
       "kind": "i18n",

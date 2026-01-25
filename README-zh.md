@@ -1,6 +1,6 @@
 # Codex Folding | [English](README.md)
 
-[![版本](https://img.shields.io/badge/版本-v0.8.0-blue.svg)](#)
+[![版本](https://img.shields.io/badge/版本-v1.0.0-blue.svg)](#)
 [![VS%20Code](https://img.shields.io/badge/VS%20Code-扩展-007ACC.svg)](#)
 [![许可证](https://img.shields.io/badge/许可证-MIT-green.svg)](LICENSE)
 
@@ -10,9 +10,16 @@
 
 这是一个“补丁式”小插件：把 Codex VS Code 扩展中“最终回答之前的所有过程”折叠进一行 `Workflow`，展开后保持原有展示，不做额外改造。
 
-<p align="center">
-  <img src="Presentation/demo.png" width="720" alt="Workflow 折叠演示（占位图）" />
-</p>
+<table align="center">
+  <tr>
+    <td>
+      <img src="Presentation/demo1.png" height="320" alt="Workflow 折叠演示 1" />
+    </td>
+    <td>
+      <img src="Presentation/demo2.png" height="320" alt="Workflow 折叠演示 2" />
+    </td>
+  </tr>
+</table>
 
 ## 功能特性
 

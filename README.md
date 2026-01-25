@@ -1,6 +1,6 @@
 # Codex Folding | [中文说明](README-zh.md)
 
-[![Version](https://img.shields.io/badge/version-v0.8.0-blue.svg)](#)
+[![Version](https://img.shields.io/badge/version-v1.0.0-blue.svg)](#)
 [![VS%20Code](https://img.shields.io/badge/VS%20Code-extension-007ACC.svg)](#)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
@@ -10,9 +10,16 @@
 
 A small patch-based add-on that folds the Codex VS Code extension’s pre-final “workflow” into a single expandable line, without changing the original rendering when expanded.
 
-<p align="center">
-  <img src="Presentation/demo.png" width="720" alt="Workflow folding demo (placeholder)" />
-</p>
+<table align="center">
+  <tr>
+    <td>
+      <img src="Presentation/demo1.png" height="320" alt="Workflow folding demo 1" />
+    </td>
+    <td>
+      <img src="Presentation/demo2.png" height="320" alt="Workflow folding demo 2" />
+    </td>
+  </tr>
+</table>
 
 ## Features
 
