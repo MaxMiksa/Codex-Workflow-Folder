@@ -11,13 +11,9 @@ test("patchExtensionHostJs injects workflow meta tag", () => {
     'async getWebviewContentProduction(e){let l=i.replace("<!-- PROD_BASE_TAG_HERE -->","X");if(p){let h=this.initialRouteMetaTag(p);h&&(l=l.replace("</head>",`${h}\\n</head>`))}return l}';
   const out = patchExtensionHostJs(input);
   assert.match(out, /codex-workflow-collapse/i);
-  assert.match(out, /CODEX_WORKFLOW_FOLD_HOST_V5/);
-  assert.match(out, /preferWsl:pref/);
-  assert.match(out, /await read\(Bt\(\)\)/);
-  assert.match(out, /await read\(!1\)/);
-  assert.match(out, /process\.env\.USERPROFILE/);
-  assert.match(out, /<head[^>]*>/);
-  assert.match(out, /\\\[codex\\\.workflow\\\]/);
+  assert.match(out, /CODEX_WORKFLOW_FOLD_HOST_V6/);
+  assert.match(out, /require\("vscode"\)/);
+  assert.match(out, /workspace\?\.\s*getConfiguration/);
 });
 
 test("patchWebviewBundleJs injects workflow fold patch marker", () => {
