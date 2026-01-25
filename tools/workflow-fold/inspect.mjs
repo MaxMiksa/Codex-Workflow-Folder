@@ -69,8 +69,8 @@ function checkAnchors({ hostJs, webviewJs, localeJs }) {
     });
     checks.push({
       file: "webview/assets/index-*.js",
-      name: "webview:workflow-fold-patch-v9",
-      ok: webviewJs.includes("CODEX_WORKFLOW_FOLD_PATCH_V9"),
+      name: "webview:workflow-fold-patch-v10",
+      ok: webviewJs.includes("CODEX_WORKFLOW_FOLD_PATCH_V10"),
     });
   }
 
