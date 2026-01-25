@@ -7,8 +7,8 @@
 ## Canonical URLs (this is the source of truth)
 
 - This file: `https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/INSTALL_FOR_AI.md`
-- Remote install script (single file, pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/0c78b8b/docs/remote/codex-folding-install.mjs`
-- Remote uninstall script (single file, pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/0c78b8b/docs/remote/codex-folding-uninstall.mjs`
+- Remote install script (single file, pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/7c26207/docs/remote/codex-folding-install.mjs`
+- Remote uninstall script (single file, pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/7c26207/docs/remote/codex-folding-uninstall.mjs`
 - Manual (for user to save): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/main/docs/AI_OPERATOR_MANUAL.md`
 
 ## Preconditions
@@ -29,9 +29,9 @@
 
 1. Download the remote install script
    - Save to a temporary folder:
-     - `Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/0c78b8b/docs/remote/codex-folding-install.mjs" -OutFile "$env:TEMP\\codex-folding-install.mjs"`
+     - `Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/7c26207/docs/remote/codex-folding-install.mjs" -OutFile "$env:TEMP\\codex-folding-install.mjs"`
 
-2. Run install script (patches extension + writes config hint)
+2. Run install script (patches extension + saves manual)
    - `node "$env:TEMP\\codex-folding-install.mjs"`
    - Expected behavior:
      - Finds the installed extension folder under `%USERPROFILE%\\.vscode\\extensions\\openai.chatgpt-*`
@@ -41,7 +41,18 @@
      - Prints absolute paths of modified files and backups
 
 3. Restart VS Code
-   - Required for the extension webview to pick up the config change.
+   - Required for the extension webview to pick up patched artifacts.
+
+## Optional: setting (easier than `.codex/config.toml`)
+
+This project does **not** use `%USERPROFILE%\\.codex\\config.toml` anymore. The behavior is controlled via **VS Code Settings**:
+
+- Key: `codex.workflow.collapseByDefault`
+- Values:
+  - `"collapse"`: show Workflow, default collapsed (recommended)
+  - `"expand"`: show Workflow, default expanded
+  - `"disable"`: disable feature (upstream behavior)
+- Default: if unset, the patched extension behaves like `"collapse"`.
 
 ## What gets modified on the user machine
 
@@ -49,14 +60,14 @@
   - `out\\extension.js`
   - `webview\\assets\\index-*.js` (the active bundle referenced by `webview\\index.html`)
   - `webview\\assets\\zh-CN-*.js`
-- Codex config:
-  - `%USERPROFILE%\\.codex\\config.toml`
+- VS Code settings (optional; installer does not modify it):
+  - You may add `codex.workflow.collapseByDefault` to VS Code `settings.json` if you want `"expand"` or `"disable"`.
 
 ## Why each step exists (purpose)
 
 1. Download script: ensures “no-clone” and eliminates ambiguity about what code to run.
-2. Run script: performs deterministic patching (3 files), creates backups for safe rollback, and writes the config key + comments so users can understand and modify the behavior later.
-3. Restart VS Code: the extension/webview assets are loaded at runtime; restart is the simplest and most reliable way to pick up patched artifacts and config.
+2. Run script: performs deterministic patching (3 files), creates backups for safe rollback, and saves the manual for the user.
+3. Restart VS Code: the extension/webview assets are loaded at runtime; restart is the simplest and most reliable way to pick up patched artifacts.
 
 
 

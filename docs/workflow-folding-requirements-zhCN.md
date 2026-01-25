@@ -4,6 +4,8 @@
 >
 > 规格总览见：`PROJECT.md`
 
+> 实现说明（非问答原文的一部分）：由于 `.codex/config.toml` 在实际用户环境中容易造成误判/不稳定，本仓库最终实现改为使用 VS Code 用户设置 `codex.workflow.collapseByDefault` 来控制 `"collapse" | "expand" | "disable"`（安装后默认 `"collapse"`，无需额外配置也能看到效果）。
+
 ## Round A（用户提出需求：问题情境描述）
 
 **用户：**
@@ -95,4 +97,3 @@
 2. 文案你决定更合适的；跟随界面语言（Codex 插件本身也读取语言配置，可照抄）。  
 3. 默认按 `"disable"` 处理；修改 config 后需要重启 VS Code 才生效可接受。  
 4. 可以，怎么容易和稳定怎么来。
-

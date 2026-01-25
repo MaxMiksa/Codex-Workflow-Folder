@@ -4,7 +4,7 @@
 [![VS%20Code](https://img.shields.io/badge/VS%20Code-扩展-007ACC.svg)](#)
 [![许可证](https://img.shields.io/badge/许可证-MIT-green.svg)](LICENSE)
 
-✅ **每轮对话独立 Workflow 折叠 | config.toml 三态开关 | 面向 AI 的一键安装/卸载**  
+✅ **每轮对话独立 Workflow 折叠 | VS Code 设置三态开关 | 面向 AI 的一键安装/卸载**  
 ✅ **折叠“思考/工具输出”等过程噪音 | 只保留最终回答干净可读**  
 ✅ **Windows | Codex VS Code 扩展 `openai.chatgpt`**  
 
@@ -20,14 +20,13 @@
 | :--- | :--- |
 | 🧩 Workflow 折叠 | 将每轮对话的所有过程项聚合到独立 `Workflow` 块中。 |
 | ⏱️ 实时计时 | 运行中显示 `进行中/完成`，每 1s 刷新耗时。 |
-| ⚙️ 配置开关 | `codex.workflow.collapseByDefault = "collapse" | "expand" | "disable"`，默认 `disable`。 |
+| ⚙️ 配置开关 | VS Code 设置 `codex.workflow.collapseByDefault = "collapse" | "expand" | "disable"`（安装后默认 `"collapse"`）。 |
 | 🧯 可回滚 | 自动生成 `*.bak` 备份，且补丁可重复执行（幂等）。 |
 
 ## 使用指南（推荐路径）
 
 1. 把下面的“安装 Prompt”发给你的 AI。
-2. 编辑 `C:\Users\<你>\.codex\config.toml`：
-   - `codex.workflow.collapseByDefault = "collapse"`
+2. （可选）在 VS Code 用户设置中设置 `codex.workflow.collapseByDefault` 为 `"collapse" | "expand" | "disable"`。
 3. 重启 VS Code。
 
 ## 给 AI 的安装/卸载 Prompt
@@ -46,7 +45,7 @@
   <summary>环境要求与限制</summary>
 
 - 本项目直接 patch 已安装的扩展产物（不要求拿到上游扩展源码并构建）。
-- 修改 `config.toml` 后需重启 VS Code 才生效。
+- 安装/卸载后需重启 VS Code 才生效。
 </details>
 
 <details>
@@ -71,7 +70,7 @@
 <details>
   <summary>FAQ / 排错</summary>
 
-- 改了 config 没生效：重启 VS Code。
+- 没生效：重启 VS Code。
 - 扩展更新后失效：重新执行 `npm run apply`。
 </details>
 

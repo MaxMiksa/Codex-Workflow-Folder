@@ -28,12 +28,11 @@
       "verifyIncludes": ["codex.workflow.label"]
     }
   ],
-  "config": {
-    "file": "%USERPROFILE%/.codex/config.toml",
+  "settings": {
+    "location": "VS Code user settings (settings.json / JSONC)",
     "key": "codex.workflow.collapseByDefault",
     "values": ["collapse", "expand", "disable"],
-    "default": "disable",
+    "default": "collapse",
     "restartRequired": true
   }
 }
-

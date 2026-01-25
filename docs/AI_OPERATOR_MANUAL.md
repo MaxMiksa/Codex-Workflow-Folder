@@ -11,8 +11,8 @@ It folds *all pre-final process items* (thinking/tool calls/tool output/status/e
 - Manual (this file): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/main/docs/AI_OPERATOR_MANUAL.md`
 - Install guide: `https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/INSTALL_FOR_AI.md`
 - Uninstall guide: `https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/UNINSTALL_FOR_AI.md`
-- Remote install script (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/0c78b8b/docs/remote/codex-folding-install.mjs`
-- Remote uninstall script (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/0c78b8b/docs/remote/codex-folding-uninstall.mjs`
+- Remote install script (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/7c26207/docs/remote/codex-folding-install.mjs`
+- Remote uninstall script (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/7c26207/docs/remote/codex-folding-uninstall.mjs`
 
 ## Goal / Scope (strict)
 
@@ -30,15 +30,15 @@ Rule: “Workflow” must contain everything before the final answer (reasoning/
 - Codex extension installed (Publisher: OpenAI, Extension id: `openai.chatgpt`)
 - Node.js available in PATH
 
-## Parameters (config.toml)
+## Parameters (VS Code settings)
 
-- Recommended setting location: VS Code `settings.json`
+- Recommended setting location: VS Code `settings.json` (JSONC; comments allowed)
 - Key: `codex.workflow.collapseByDefault`
 - Values:
   - `"collapse"`: show Workflow, default collapsed
   - `"expand"`: show Workflow, default expanded
   - `"disable"`: disable feature (upstream behavior)
-- Default behavior: if unset, installer defaults to `"collapse"` (so the feature works without extra configuration)
+- Default behavior: if unset, the patched extension defaults to `"collapse"` (so the feature works without extra configuration)
 - Restart: VS Code restart is required after changes
 
 ## Install / Uninstall (deterministic)
@@ -53,7 +53,7 @@ Do not clone. Use the remote scripts only:
   - `out\\extension.js`
   - `webview\\assets\\index-*.js` (the active bundle referenced by `webview\\index.html`)
   - `webview\\assets\\zh-CN-*.js`
-- VS Code settings:
+- VS Code settings (optional):
   - Optional: set `codex.workflow.collapseByDefault` to control behavior; uninstall does not modify settings.
 
 ## Verification markers (for AI checks)
