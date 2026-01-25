@@ -67,6 +67,11 @@ function checkAnchors({ hostJs, webviewJs, localeJs }) {
       name: "webview:InProgressFixedContentItem",
       ok: webviewJs.includes("function InProgressFixedContentItem"),
     });
+    checks.push({
+      file: "webview/assets/index-*.js",
+      name: "webview:workflow-fold-patch-v5",
+      ok: webviewJs.includes("CODEX_WORKFLOW_FOLD_PATCH_V5"),
+    });
   }
 
   if (localeJs != null) {

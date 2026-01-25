@@ -1,6 +1,6 @@
 # Codex Folding | [中文说明](README-zh.md)
 
-[![Version](https://img.shields.io/badge/version-v0.5.0-blue.svg)](#)
+[![Version](https://img.shields.io/badge/version-v0.8.0-blue.svg)](#)
 [![VS%20Code](https://img.shields.io/badge/VS%20Code-extension-007ACC.svg)](#)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
