@@ -54,7 +54,7 @@ This project does **not** use `%USERPROFILE%\\.codex\\config.toml` anymore. The 
   - `"collapse"`: show Workflow, default collapsed (recommended)
   - `"expand"`: show Workflow, default expanded
   - `"disable"`: disable feature (upstream behavior)
-- Default: if unset, the patched extension behaves like `"collapse"`.
+- Default: if unset (or the injected `<meta>` is missing), the patched webview behaves like `"collapse"`.
 
 ## What gets modified on the user machine
 

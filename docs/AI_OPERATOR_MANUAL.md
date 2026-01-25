@@ -40,7 +40,7 @@ Rule: “Workflow” must contain everything before the final answer (reasoning/
   - `"collapse"`: show Workflow, default collapsed
   - `"expand"`: show Workflow, default expanded
   - `"disable"`: disable feature (upstream behavior)
-- Default behavior: if unset, the patched extension defaults to `"collapse"` (so the feature works without extra configuration)
+- Default behavior: if unset (or the injected `<meta>` is missing), the patched webview defaults to `"collapse"` (so the feature works without extra configuration)
 - Restart: VS Code restart is required after changes
 
 ## Install / Uninstall (deterministic)

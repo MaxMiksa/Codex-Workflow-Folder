@@ -122,7 +122,7 @@ function patchExtensionHostJs(source) {
 }
 
 function patchWebviewBundleJs(source) {
-  if (source.includes("CODEX_WORKFLOW_FOLD_PATCH_V3")) return source;
+  if (source.includes("CODEX_WORKFLOW_FOLD_PATCH_V4")) return source;
 
   const exportIdx = source.lastIndexOf("export{");
   if (exportIdx === -1) {
@@ -133,7 +133,8 @@ function patchWebviewBundleJs(source) {
 /* CODEX_WORKFLOW_FOLD_PATCH */
 /* CODEX_WORKFLOW_FOLD_PATCH_V2 */
 /* CODEX_WORKFLOW_FOLD_PATCH_V3 */
-function __codexWorkflowCollapseMode(){const m=globalThis.document?.querySelector('meta[name="codex-workflow-collapse"]');const v=m?.getAttribute("content")?.trim();return v==="collapse"||v==="expand"||v==="disable"?v:"disable"}
+/* CODEX_WORKFLOW_FOLD_PATCH_V4 */
+function __codexWorkflowCollapseMode(){const m=globalThis.document?.querySelector('meta[name="codex-workflow-collapse"]');const v=m?.getAttribute("content")?.trim();return v==="collapse"||v==="expand"||v==="disable"?v:"collapse"}
 function __codexWorkflowFormatElapsed(ms){const s=Math.max(0,Math.floor(ms/1e3));const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;const p=n=>String(n).padStart(2,"0");if(h>0)return \`\${h}h\${p(m)}m\${p(ss)}s\`;return \`\${m}m\${p(ss)}s\`}
 function __codexWorkflowFoldItems(items,mode){if(mode==="disable")return items;if(!Array.isArray(items))return items;const out=[];let inTurn=!1;let children=[];let turnIndex=-1;const pushWorkflow=()=>{if(children.length===0)return;out.push({type:"workflow",id:\`workflow-\${turnIndex}\`,children,defaultCollapsed:mode==="collapse"})};for(const it of items){if(it?.type==="user-message"){inTurn=!0;turnIndex++;out.push(it);children=[];continue}if(inTurn&&it?.type==="assistant-message"){pushWorkflow();out.push(it);inTurn=!1;children=[];continue}if(inTurn)children.push(it);else out.push(it)}inTurn&&pushWorkflow();return out}
 const __codexOrigMapStateToLocalConversationItems=typeof mapStateToLocalConversationItems==="function"?mapStateToLocalConversationItems:null;
