@@ -11,8 +11,8 @@ It folds *all pre-final process items* (thinking/tool calls/tool output/status/e
 - Manual (this file): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/main/docs/AI_OPERATOR_MANUAL.md`
 - Install guide: `https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/INSTALL_FOR_AI.md`
 - Uninstall guide: `https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/UNINSTALL_FOR_AI.md`
-- Remote install script (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/4824d70/docs/remote/codex-folding-install.mjs`
-- Remote uninstall script (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/4824d70/docs/remote/codex-folding-uninstall.mjs`
+- Remote install script (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/0c78b8b/docs/remote/codex-folding-install.mjs`
+- Remote uninstall script (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/0c78b8b/docs/remote/codex-folding-uninstall.mjs`
 
 ## Goal / Scope (strict)
 

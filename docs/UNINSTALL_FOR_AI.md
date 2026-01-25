@@ -5,7 +5,7 @@
 ## Canonical URLs (this is the source of truth)
 
 - This file: `https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/UNINSTALL_FOR_AI.md`
-- Remote uninstall script (single file, pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/4824d70/docs/remote/codex-folding-uninstall.mjs`
+- Remote uninstall script (single file, pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/0c78b8b/docs/remote/codex-folding-uninstall.mjs`
 - Manual (for user to save): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/main/docs/AI_OPERATOR_MANUAL.md`
 
 ## Preconditions
@@ -24,7 +24,7 @@
 ## Steps (what to do)
 
 1. Download the remote uninstall script
-   - `Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/4824d70/docs/remote/codex-folding-uninstall.mjs" -OutFile "$env:TEMP\\codex-folding-uninstall.mjs"`
+   - `Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/0c78b8b/docs/remote/codex-folding-uninstall.mjs" -OutFile "$env:TEMP\\codex-folding-uninstall.mjs"`
 
 2. Run uninstall script (restores installed extension artifacts from `*.bak`)
    - `node "$env:TEMP\\codex-folding-uninstall.mjs"`
