@@ -10,16 +10,10 @@
 
 这是一个“补丁式”小插件：把 Codex VS Code 扩展中“最终回答之前的所有过程”折叠进一行 `Workflow`，展开后保持原有展示，不做额外改造。
 
-<table align="center">
-  <tr>
-    <td>
-      <img src="Presentation/demo1.png" height="320" alt="Workflow 折叠演示 1" />
-    </td>
-    <td>
-      <img src="Presentation/demo2.png" height="320" alt="Workflow 折叠演示 2" />
-    </td>
-  </tr>
-</table>
+<div align="center" style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+  <img src="Presentation/demo1.png" height="620" alt="Workflow folding demo 1" />
+  <img src="Presentation/demo2.png" height="620" alt="Workflow folding demo 2" />
+</div>
 
 ## 功能特性
 
