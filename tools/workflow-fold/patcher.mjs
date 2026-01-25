@@ -38,7 +38,7 @@ export function patchExtensionHostJs(source) {
 }
 
 export function patchWebviewBundleJs(source) {
-  if (source.includes("CODEX_WORKFLOW_FOLD_PATCH_V7")) return source;
+  if (source.includes("CODEX_WORKFLOW_FOLD_PATCH_V8")) return source;
 
   const exportIdx = source.lastIndexOf("export{");
   if (exportIdx === -1) {
@@ -51,8 +51,8 @@ export function patchWebviewBundleJs(source) {
 /* CODEX_WORKFLOW_FOLD_PATCH_V3 */
 /* CODEX_WORKFLOW_FOLD_PATCH_V4 */
 /* CODEX_WORKFLOW_FOLD_PATCH_V5 */
-/* CODEX_WORKFLOW_FOLD_PATCH_V6 */
-	/* CODEX_WORKFLOW_FOLD_PATCH_V7 */
+	/* CODEX_WORKFLOW_FOLD_PATCH_V6 */
+		/* CODEX_WORKFLOW_FOLD_PATCH_V8 */
 	function __codexWorkflowCollapseMode(){const m=globalThis.document?.querySelector('meta[name="codex-workflow-collapse"]');const v=m?.getAttribute("content")?.trim();return v==="collapse"||v==="expand"||v==="disable"?v:"collapse"}
 	function __codexWorkflowFormatElapsed(ms){const s=Math.max(0,Math.floor(ms/1e3));const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;const p=n=>String(n).padStart(2,"0");if(h>0)return \`\${h}h\${p(m)}m\${p(ss)}s\`;return \`\${m}m\${p(ss)}s\`}
 	function __codexWorkflowFormatElapsedCompact(ms,locale){const s=Math.max(0,Math.floor(ms/1e3));const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;const p=n=>String(n).padStart(2,"0");const l=String(locale??"").toLowerCase();const isZh=l.startsWith("zh");if(isZh){if(h>0)return h+" 小时 "+p(m)+" 分 "+p(ss)+" 秒";return m+" 分 "+p(ss)+" 秒"}if(h>0)return h+" h "+p(m)+" m "+p(ss)+" s";return m+" m "+p(ss)+" s"}
