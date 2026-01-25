@@ -25,6 +25,8 @@
 
 1. Download the remote uninstall script
    - `Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/7c26207/docs/remote/codex-folding-uninstall.mjs" -OutFile "$env:TEMP\\codex-folding-uninstall.mjs"`
+   - If `raw.githubusercontent.com` is blocked in the user’s network, use GitHub’s alternative raw endpoint:
+     - `Invoke-WebRequest -Uri "https://github.com/MaxMiksa/Codex-Folding/raw/7c26207/docs/remote/codex-folding-uninstall.mjs" -OutFile "$env:TEMP\\codex-folding-uninstall.mjs"`
 
 2. Run uninstall script (restores installed extension artifacts from `*.bak`)
    - `node "$env:TEMP\\codex-folding-uninstall.mjs"`

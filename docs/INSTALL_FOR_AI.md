@@ -30,6 +30,8 @@
 1. Download the remote install script
    - Save to a temporary folder:
      - `Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/7c26207/docs/remote/codex-folding-install.mjs" -OutFile "$env:TEMP\\codex-folding-install.mjs"`
+   - If `raw.githubusercontent.com` is blocked in the user’s network, use GitHub’s alternative raw endpoint:
+     - `Invoke-WebRequest -Uri "https://github.com/MaxMiksa/Codex-Folding/raw/7c26207/docs/remote/codex-folding-install.mjs" -OutFile "$env:TEMP\\codex-folding-install.mjs"`
 
 2. Run install script (patches extension + saves manual)
    - `node "$env:TEMP\\codex-folding-install.mjs"`
