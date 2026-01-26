@@ -1,20 +1,51 @@
-# Codex Folding | [中文说明](README-zh.md)
+<h1 align="center">Codex Folding</h1>
 
-[![Version](https://img.shields.io/badge/version-v1.1.0-blue.svg)](#)
-[![VS%20Code](https://img.shields.io/badge/VS%20Code-extension-007ACC.svg)](#)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+<table width="100%">
+  <tr>
+    <td width="33%"></td>
+    <td align="center">
+      <a href="#"><img alt="Version" src="https://img.shields.io/badge/version-v1.1.0-blue.svg" /></a>
+      <a href="#"><img alt="VS Code" src="https://img.shields.io/badge/VS%20Code-extension-007ACC.svg" /></a>
+      <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-green.svg" /></a>
+    </td>
+    <td width="33%" align="right"><a href="README-zh.md">中文说明</a></td>
+  </tr>
+</table>
 
-✅ **Per-turn Workflow folding | 3-state VS Code setting | One-command install/uninstall for AI**  
-✅ **Collapse noisy “thinking & tool output” | Keep final answer clean**  
-✅ **Windows | Codex VS Code extension `openai.chatgpt`**  
+✅ **Auto-fold Lengthy Workflows | Customizable Settings | One-Prompt AI Installation**  
+✅ **Hide the "Thinking" Noise | Keep Your Chat Clean & Focused**  
+✅ **Designed for Windows | Seamlessly integrates with Codex Extension**  
+✅ **Update-Proof Design | Easily re-apply after official extension updates**  
+✅ **Bilingual (EN/中文) | Copy the prompt below to install**  
 
-✅ **Works across upstream Codex extension updates (re-run install after updating the official extension)**  
+Want a clean and easy-to-browse Codex? Tired of Codex's long workflows? It's super simple! Just copy one sentence to Codex to enable folding of Codex's thought process and command execution flow in VS Code.
 
-A small patch-based add-on that folds the Codex VS Code extension’s pre-final “workflow” into a single expandable line, without changing the original rendering when expanded.
-
-<div align="center" style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
-  <img src="Presentation/demo.gif" width="900" alt="Workflow folding demo" />
-</div>
+<table align="center">
+  <tr>
+    <td width="50%" align="center">
+      <img src="Presentation/demo1.png" height="220" alt="Demo 1" />
+    </td>
+    <td width="50%" align="center">
+      <img src="Presentation/demo2.png" height="220" alt="Demo 2" />
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <img src="Presentation/demo3.png" height="220" alt="Demo 3" />
+    </td>
+    <td width="50%" align="center">
+      <img src="Presentation/demo4.png" height="220" alt="Demo 4" />
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <img src="Presentation/demo5.png" height="220" alt="Demo 5" />
+    </td>
+    <td width="50%" align="center">
+      <img src="Presentation/demo6.png" height="220" alt="Demo 6" />
+    </td>
+  </tr>
+</table>
 
 ## Features
 

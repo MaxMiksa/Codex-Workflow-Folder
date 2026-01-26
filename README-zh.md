@@ -1,20 +1,51 @@
-# Codex Folding | [English](README.md)
+<h1 align="center">Codex Folding</h1>
 
-[![版本](https://img.shields.io/badge/版本-v1.1.0-blue.svg)](#)
-[![VS%20Code](https://img.shields.io/badge/VS%20Code-扩展-007ACC.svg)](#)
-[![许可证](https://img.shields.io/badge/许可证-MIT-green.svg)](LICENSE)
+<table width="100%">
+  <tr>
+    <td width="33%"></td>
+    <td align="center">
+      <a href="#"><img alt="版本" src="https://img.shields.io/badge/版本-v1.1.0-blue.svg" /></a>
+      <a href="#"><img alt="VS Code" src="https://img.shields.io/badge/VS%20Code-扩展-007ACC.svg" /></a>
+      <a href="LICENSE"><img alt="许可证" src="https://img.shields.io/badge/许可证-MIT-green.svg" /></a>
+    </td>
+    <td width="33%" align="right"><a href="README.md">English</a></td>
+  </tr>
+</table>
 
-✅ **每轮对话独立 Workflow 折叠 | VS Code 设置三态开关 | 面向 AI 的一键安装/卸载**  
-✅ **折叠“思考/工具输出”等过程噪音 | 只保留最终回答干净可读**  
-✅ **Windows | Codex VS Code 扩展 `openai.chatgpt`**  
+✅ **自动折叠冗长流程 | 支持个性化配置 | AI 一句指令极速安装**  
+✅ **隐藏“思考与工具”噪音 | 让对话界面回归清爽**  
+✅ **专为 Windows 设计 | 完美兼容 Codex VS Code 官方扩展**  
+✅ **无惧官方版本更新 | 插件升级后重新运行安装即可复活**  
+✅ **中英双语支持 | 复制下方一句 Prompt 即可安装**  
 
-✅ **可跨官方插件更新使用（官方扩展更新后重新运行安装脚本即可）**  
+想拥有一个整洁且便于浏览的codex？厌倦了codex中长长的workflow？超级简单！仅需复制一句话给codex，你就能够在vscode中手动折叠codex的思考与命令执行流程。
 
-这是一个“补丁式”小插件：把 Codex VS Code 扩展中“最终回答之前的所有过程”折叠进一行 `Workflow`，展开后保持原有展示，不做额外改造。
-
-<div align="center" style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
-  <img src="Presentation/demo.gif" width="900" alt="Workflow 折叠演示" />
-</div>
+<table align="center">
+  <tr>
+    <td width="50%" align="center">
+      <img src="Presentation/demo1.png" height="220" alt="Demo 1" />
+    </td>
+    <td width="50%" align="center">
+      <img src="Presentation/demo2.png" height="220" alt="Demo 2" />
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <img src="Presentation/demo3.png" height="220" alt="Demo 3" />
+    </td>
+    <td width="50%" align="center">
+      <img src="Presentation/demo4.png" height="220" alt="Demo 4" />
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <img src="Presentation/demo5.png" height="220" alt="Demo 5" />
+    </td>
+    <td width="50%" align="center">
+      <img src="Presentation/demo6.png" height="220" alt="Demo 6" />
+    </td>
+  </tr>
+</table>
 
 ## 功能特性
 
