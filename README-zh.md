@@ -8,6 +8,8 @@
 ✅ **折叠“思考/工具输出”等过程噪音 | 只保留最终回答干净可读**  
 ✅ **Windows | Codex VS Code 扩展 `openai.chatgpt`**  
 
+✅ **可跨官方插件更新使用（官方扩展更新后重新运行安装脚本即可）**  
+
 这是一个“补丁式”小插件：把 Codex VS Code 扩展中“最终回答之前的所有过程”折叠进一行 `Workflow`，展开后保持原有展示，不做额外改造。
 
 <div align="center" style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
