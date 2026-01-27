@@ -1,4 +1,4 @@
-<h1 align="center">Codex Folding</h1>
+<h1 align="center">Codex Workflow Folder</h1>
 
 <table width="100%">
   <tr>
@@ -23,58 +23,51 @@
 
 Want a clean and easy-to-browse Codex? Tired of Codex's long workflows? It's super simple! Just copy one sentence to Codex to enable folding of Codex's thought process and command execution flow in VS Code.
 
-<table align="center">
-  <tr>
-    <td width="50%" align="center">
-      <img src="Presentation/demo1.png" height="220" alt="Demo 1" />
-    </td>
-    <td width="50%" align="center">
-      <img src="Presentation/demo2.png" height="220" alt="Demo 2" />
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" align="center">
-      <img src="Presentation/demo3.png" height="220" alt="Demo 3" />
-    </td>
-    <td width="50%" align="center">
-      <img src="Presentation/demo4.png" height="220" alt="Demo 4" />
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" align="center">
-      <img src="Presentation/demo5.png" height="220" alt="Demo 5" />
-    </td>
-    <td width="50%" align="center">
-      <img src="Presentation/demo6.png" height="220" alt="Demo 6" />
-    </td>
-  </tr>
-</table>
+<div align="center" style="display: flex; align-items: center; justify-content: center; gap: 20px;">
+  <div style="flex: 1; text-align: center;">
+    <h3>Before</h3>
+    <img src="Presentation/before-folding.jpg" width="100%" alt="Before: Long workflow" style="border: 1px solid #ccc; border-radius: 8px;" />
+  </div>
+  <div style="font-size: 40px;">➡️</div>
+  <div style="flex: 1; text-align: center;">
+    <h3>After</h3>
+    <img src="Presentation/after-folding.png" width="100%" alt="After: Clean view" style="border: 1px solid #ccc; border-radius: 8px;" />
+  </div>
+</div>
 
 ## Features
 
-| Feature (Emoji + Name) | Description |
+| ✨ Core Features | 💡 Benefit |
 | :--- | :--- |
-| 🧩 Workflow Folding | Groups all pre-final process items into a per-turn `Workflow` block. |
-| ⏱️ Live Timer | Shows `Working/Done` and updates elapsed time every 1s while running. |
-| ⚙️ Config Switch | VS Code setting `codex.workflow.collapseByDefault = "collapse" | "expand" | "disable"` (default: `"collapse"` after install). |
-| 🧯 Safe & Reversible | Creates `*.bak` backups and is idempotent. |
+| **🧩 Smart Folding** | Automatically tucks away lengthy thought processes into a single line; click to expand. |
+| **⏱️ Live Status** | Shows real-time elapsed time (e.g., `⚡ 1m 20s`) so you know exactly how long a task takes. |
+| **⚙️ Full Control** | Defaults to collapsed, but fully customizable via VS Code settings (expand/disable). |
+| **🧯 Safe & Secure** | Auto-backups original files; supports one-click uninstall/rollback; 100% reversible. |
 
-## Usage Guide (Happy Path)
+## 🚀 Quick Start: Install & Usage
 
-1. Ask your AI to install using the prompt below.
-2. (Optional) Set VS Code user setting `codex.workflow.collapseByDefault` to `"collapse" | "expand" | "disable"`.
-3. Restart VS Code.
+### 1. Install
+Copy and paste the following prompt to Codex:
 
-## AI Install/Uninstall Prompts
-
-### Install Prompt (give to AI)
 ```text
-Strictly follow https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/INSTALL_FOR_AI.md to install this feature. Do not improvise.
+Strictly follow https://github.com/MaxMiksa/Codex-Workflow-Folder/blob/main/docs/INSTALL_FOR_AI.md to install this feature. Do not improvise.
 ```
 
-### Uninstall Prompt (give to AI)
+> 👉 **Important:** Restart VS Code after the AI finishes the task.
+
+### 2. Configure (Optional)
+You can customize behavior in **VS Code Settings** (`Ctrl+,`) by searching for:
+`codex.workflow.collapseByDefault`
+
+- `"collapse"` (Default): Auto-fold workflows.
+- `"expand"`: Show workflows expanded by default.
+- `"disable"`: Turn off the feature completely.
+
+### 🗑️ Uninstall
+To remove the feature, send this prompt to Codex and restart VS Code:
+
 ```text
-Strictly follow https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/UNINSTALL_FOR_AI.md to uninstall this feature. Do not improvise.
+Strictly follow https://github.com/MaxMiksa/Codex-Workflow-Folder/blob/main/docs/UNINSTALL_FOR_AI.md to uninstall this feature. Do not improvise.
 ```
 
 <details>

@@ -1,5 +1,5 @@
 {
-  "name": "codex-folding",
+  "name": "codex-workflow-folder",
   "version": "1.1.0",
   "private": false,
   "description": "Adds per-turn Workflow folding to the Codex VS Code extension (openai.chatgpt) via a safe, idempotent patch.",
@@ -10,6 +10,6 @@
     "inspect": "node tools/workflow-fold/inspect.mjs",
     "apply": "node tools/workflow-fold/apply.mjs --verify",
     "verify": "node tools/workflow-fold/apply.mjs --dry-run --verify",
-    "uninstall": "node docs/remote/codex-folding-uninstall.mjs"
+    "uninstall": "node docs/remote/codex-workflow-folder-uninstall.mjs"
   }
 }

@@ -1,4 +1,4 @@
-<h1 align="center">Codex Folding</h1>
+<h1 align="center">Codex Workflow Folder</h1>
 
 <table width="100%">
   <tr>
@@ -23,58 +23,50 @@
 
 想拥有一个整洁且便于浏览的codex？厌倦了codex中长长的workflow？超级简单！仅需复制一句话给codex，你就能够在vscode中手动折叠codex的思考与命令执行流程。
 
-<table align="center">
-  <tr>
-    <td width="50%" align="center">
-      <img src="Presentation/demo1.png" height="220" alt="Demo 1" />
-    </td>
-    <td width="50%" align="center">
-      <img src="Presentation/demo2.png" height="220" alt="Demo 2" />
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" align="center">
-      <img src="Presentation/demo3.png" height="220" alt="Demo 3" />
-    </td>
-    <td width="50%" align="center">
-      <img src="Presentation/demo4.png" height="220" alt="Demo 4" />
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" align="center">
-      <img src="Presentation/demo5.png" height="220" alt="Demo 5" />
-    </td>
-    <td width="50%" align="center">
-      <img src="Presentation/demo6.png" height="220" alt="Demo 6" />
-    </td>
-  </tr>
-</table>
+<div align="center" style="display: flex; align-items: center; justify-content: center; gap: 20px;">
+  <div style="flex: 1; text-align: center;">
+    <h3>Before</h3>
+    <img src="Presentation/before-folding.jpg" width="100%" alt="Before: Long workflow" style="border: 1px solid #ccc; border-radius: 8px;" />
+  </div>
+  <div style="font-size: 40px;">➡️</div>
+  <div style="flex: 1; text-align: center;">
+    <h3>After</h3>
+    <img src="Presentation/after-folding.png" width="100%" alt="After: Clean view" style="border: 1px solid #ccc; border-radius: 8px;" />
+  </div>
+</div>
 
 ## 功能特性
 
-| 特性（Emoji + 名称） | 说明 |
+| ✨ 核心特性 | 💡 用户收益 |
 | :--- | :--- |
-| 🧩 Workflow 折叠 | 将每轮对话的所有过程项聚合到独立 `Workflow` 块中。 |
-| ⏱️ 实时计时 | 运行中显示 `进行中/完成`，每 1s 刷新耗时。 |
-| ⚙️ 配置开关 | VS Code 设置 `codex.workflow.collapseByDefault = "collapse" | "expand" | "disable"`（安装后默认 `"collapse"`）。 |
-| 🧯 可回滚 | 自动生成 `*.bak` 备份，且补丁可重复执行（幂等）。 |
+| **🧩 智能折叠** | 自动将冗长的思考过程收纳进一行，点击即可展开查看详情。 |
+| **⏱️ 实时状态** | 实时显示运行耗时（如 `⚡ 1m 20s`），任务完成一目了然。 |
+| **⚙️ 自由控制** | 默认折叠，但支持通过 VS Code 设置改为默认展开或彻底关闭。 |
+| **🧯 安全无忧** | 自动备份原文件，支持一键卸载回滚，安装过程完全可逆。 |
 
-## 使用指南（推荐路径）
+## 🚀 快速开始：安装与使用
 
-1. 把下面的“安装 Prompt”发给你的 AI。
-2. （可选）在 VS Code 用户设置中设置 `codex.workflow.collapseByDefault` 为 `"collapse" | "expand" | "disable"`。
-3. 重启 VS Code。
+### 1. 安装
+直接复制以下指令（Prompt）发送给 Codex：
 
-## 给 AI 的安装/卸载 Prompt
-
-### 安装 Prompt（发给 AI）
 ```text
-严格按照 https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/INSTALL_FOR_AI.md 的步骤安装该功能，不要自由发挥。
+严格按照 https://github.com/MaxMiksa/Codex-Workflow-Folder/blob/main/docs/INSTALL_FOR_AI.md 的步骤安装该功能，不要自由发挥。
 ```
 
-### 卸载 Prompt（发给 AI）
+> 👉 **重要：** AI 执行完毕后，请 **重启 VS Code** 以生效。
+
+### 2. 个性化配置（可选）
+您可以在 **VS Code 设置** (`Ctrl+,`) 中搜索 `codex.workflow.collapseByDefault` 来调整默认行为：
+
+- `"collapse"` (默认)：自动折叠 Workflow。
+- `"expand"`：默认展开 Workflow。
+- `"disable"`：彻底关闭此功能。
+
+### 🗑️ 卸载
+如需移除，发送以下指令给 Codex 并重启 VS Code 即可：
+
 ```text
-严格按照 https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/UNINSTALL_FOR_AI.md 的步骤卸载该功能，不要自由发挥。
+严格按照 https://github.com/MaxMiksa/Codex-Workflow-Folder/blob/main/docs/UNINSTALL_FOR_AI.md 的步骤卸载该功能，不要自由发挥。
 ```
 
 <details>
