@@ -200,7 +200,7 @@ async function patchFile(filePath, patchFn) {
 
 async function maybeDownloadManual() {
   const url =
-    "https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/main/docs/AI_OPERATOR_MANUAL.md";
+    "https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/AI_OPERATOR_MANUAL.md";
   const content = await fetchText(url);
 
   const candidates = [
@@ -212,7 +212,7 @@ async function maybeDownloadManual() {
   for (const dir of candidates) {
     try {
       await fs.mkdir(dir, { recursive: true });
-      const outPath = path.join(dir, "Codex-Folding-AI-Operator-Manual.md");
+      const outPath = path.join(dir, "Codex-Workflow-Folder-AI-Operator-Manual.md");
       await fs.writeFile(outPath, content, "utf8");
       return { outPath, url };
     } catch {
