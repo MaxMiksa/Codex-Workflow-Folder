@@ -8,6 +8,8 @@
 ✅ **Collapse noisy “thinking & tool output” | Keep final answer clean**  
 ✅ **Windows | Codex VS Code extension `openai.chatgpt`**  
 
+✅ **Works across upstream Codex extension updates (re-run install after updating the official extension)**  
+
 A small patch-based add-on that folds the Codex VS Code extension’s pre-final “workflow” into a single expandable line, without changing the original rendering when expanded.
 
 <div align="center" style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
