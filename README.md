@@ -2,21 +2,24 @@
 
 <table width="100%">
   <tr>
-    <td width="33%"></td>
     <td align="center">
-      <a href="#"><img alt="Version" src="https://img.shields.io/badge/version-v1.1.0-blue.svg" /></a>
-      <a href="#"><img alt="VS Code" src="https://img.shields.io/badge/VS%20Code-extension-007ACC.svg" /></a>
-      <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-green.svg" /></a>
+      <table align="center">
+        <tr>
+          <td align="center">
+            <a href="#"><img alt="Version" src="https://img.shields.io/badge/version-v1.1.0-blue.svg" /></a>
+            <a href="#"><img alt="VS Code" src="https://img.shields.io/badge/VS%20Code-extension-007ACC.svg" /></a>
+            <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-green.svg" /></a>
+          </td>
+          <td align="right" style="padding-left:12px;"><a href="README-zh.md">中文说明</a></td>
+        </tr>
+      </table>
     </td>
-    <td width="33%" align="right"><a href="README-zh.md">中文说明</a></td>
   </tr>
 </table>
 
 ✅ **Auto-fold Lengthy Workflows | Customizable Settings | One-Prompt AI Installation**  
-✅ **Hide the "Thinking" Noise | Keep Your Chat Clean & Focused**  
-✅ **Designed for Windows | Seamlessly integrates with Codex Extension**  
-✅ **Update-Proof Design | Easily re-apply after official extension updates**  
-✅ **Bilingual (EN/中文) | Copy the prompt below to install**  
+✅ **Hide the "Thinking" Noise | Keep Your Chat Clean & Focused | Bilingual (EN/中文)**  
+✅ **Designed for Windows | Update-Proof Design**  
 
 Want a clean and easy-to-browse Codex? Tired of Codex's long workflows? It's super simple! Just copy one sentence to Codex to enable folding of Codex's thought process and command execution flow in VS Code.
 
