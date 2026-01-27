@@ -12,7 +12,8 @@
 ✅ **隐藏“思考与工具”噪音 | 让对话界面回归清爽 | 中英双语支持**  
 ✅ **跨平台（Windows/macOS/Linux） | 无惧官方版本更新**  
 
-想拥有一个整洁且便于浏览的codex？厌倦了codex中长长的workflow？超级简单！仅需复制一句话给codex，你就能够在vscode中手动折叠codex的思考与命令执行流程。
+想拥有一个整洁且**便于上下浏览**的codex？厌倦了codex中长长的workflow？  
+超级简单！**仅需复制一句话**给codex，你就能够在vscode中手动折叠codex的思考与命令执行流程。
 
 <div align="center">
   <table style="border: none; border-collapse: collapse;">
