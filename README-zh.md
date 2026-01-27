@@ -2,21 +2,24 @@
 
 <table width="100%">
   <tr>
-    <td width="33%"></td>
     <td align="center">
-      <a href="#"><img alt="版本" src="https://img.shields.io/badge/版本-v1.1.0-blue.svg" /></a>
-      <a href="#"><img alt="VS Code" src="https://img.shields.io/badge/VS%20Code-扩展-007ACC.svg" /></a>
-      <a href="LICENSE"><img alt="许可证" src="https://img.shields.io/badge/许可证-MIT-green.svg" /></a>
+      <table align="center">
+        <tr>
+          <td align="center">
+            <a href="#"><img alt="版本" src="https://img.shields.io/badge/版本-v1.1.0-blue.svg" /></a>
+            <a href="#"><img alt="VS Code" src="https://img.shields.io/badge/VS%20Code-扩展-007ACC.svg" /></a>
+            <a href="LICENSE"><img alt="许可证" src="https://img.shields.io/badge/许可证-MIT-green.svg" /></a>
+          </td>
+          <td align="right" style="padding-left:12px;"><a href="README.md">English</a></td>
+        </tr>
+      </table>
     </td>
-    <td width="33%" align="right"><a href="README.md">English</a></td>
   </tr>
 </table>
 
 ✅ **自动折叠冗长流程 | 支持个性化配置 | AI 一句指令极速安装**  
-✅ **隐藏“思考与工具”噪音 | 让对话界面回归清爽**  
-✅ **专为 Windows 设计 | 完美兼容 Codex VS Code 官方扩展**  
-✅ **无惧官方版本更新 | 插件升级后重新运行安装即可复活**  
-✅ **中英双语支持 | 复制下方一句 Prompt 即可安装**  
+✅ **隐藏“思考与工具”噪音 | 让对话界面回归清爽 | 中英双语支持**  
+✅ **专为 Windows 设计 | 无惧官方版本更新**  
 
 想拥有一个整洁且便于浏览的codex？厌倦了codex中长长的workflow？超级简单！仅需复制一句话给codex，你就能够在vscode中手动折叠codex的思考与命令执行流程。
 
