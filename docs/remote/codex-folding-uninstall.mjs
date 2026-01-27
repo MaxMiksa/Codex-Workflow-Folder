@@ -21,15 +21,51 @@ async function fileExists(p) {
   }
 }
 
+async function dirExists(p) {
+  try {
+    const s = await fs.stat(p);
+    return s.isDirectory();
+  } catch {
+    return false;
+  }
+}
+
+function getVsCodeExtensionBases() {
+  const home = os.homedir();
+  return [
+    path.join(home, ".vscode", "extensions"),
+    path.join(home, ".vscode-insiders", "extensions"),
+    path.join(home, ".vscode-oss", "extensions"),
+  ];
+}
+
 async function findLatestOpenAiChatgptExtensionDir() {
-  const base = path.join(os.homedir(), ".vscode", "extensions");
-  const entries = await fs.readdir(base, { withFileTypes: true });
-  const candidates = entries
-    .filter((e) => e.isDirectory() && e.name.startsWith("openai.chatgpt-"))
-    .map((e) => path.join(base, e.name));
+  const bases = getVsCodeExtensionBases();
+  const existingBases = [];
+  for (const base of bases) {
+    if (await dirExists(base)) existingBases.push(base);
+  }
+
+  if (existingBases.length === 0) {
+    throw new Error(
+      `No VS Code extension directories found. Tried:\n- ${bases.join("\n- ")}`
+    );
+  }
+
+  const candidates = [];
+  for (const base of existingBases) {
+    const entries = await fs.readdir(base, { withFileTypes: true });
+    for (const e of entries) {
+      if (!e.isDirectory()) continue;
+      if (!e.name.startsWith("openai.chatgpt-")) continue;
+      candidates.push(path.join(base, e.name));
+    }
+  }
 
   if (candidates.length === 0) {
-    throw new Error(`No openai.chatgpt extension found under ${base}`);
+    throw new Error(
+      `No openai.chatgpt extension found under:\n- ${existingBases.join("\n- ")}`
+    );
   }
 
   const stats = await Promise.all(
@@ -56,10 +92,7 @@ async function readZhCnLocalePath(extDir) {
   );
   entries.sort((a, b) => a.localeCompare(b));
   const hit = entries[0];
-  if (!hit) {
-    throw new Error(`Could not find zh-CN locale bundle under ${assetsDir}`);
-  }
-  return path.join(assetsDir, hit);
+  return hit ? path.join(assetsDir, hit) : null;
 }
 
 async function restoreFromBackup(filePath) {
@@ -80,10 +113,13 @@ async function main() {
   const webviewJs = await readWebviewEntryJsPath(extDir);
   const zhCnJs = await readZhCnLocalePath(extDir);
 
-  const targets = [hostJs, webviewJs, zhCnJs];
+  const targets = [hostJs, webviewJs, ...(zhCnJs ? [zhCnJs] : [])];
   const results = [];
   for (const filePath of targets) {
     results.push({ file: filePath, ...(await restoreFromBackup(filePath)) });
+  }
+  if (!zhCnJs) {
+    log("WARN: zh-CN locale bundle not found; skipping zh-CN restore.");
   }
 
   for (const r of results) {

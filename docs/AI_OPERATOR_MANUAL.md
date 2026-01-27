@@ -1,6 +1,6 @@
 # Codex Workflow Folder — AI Operator Manual (Single Source of Truth)
 
-This manual is written for an AI agent to perform a deterministic install/uninstall on Windows with minimal guesswork.
+This manual is written for an AI agent to perform a deterministic install/uninstall on Windows/macOS/Linux with minimal guesswork.
 
 ## What this does (context for AI)
 
@@ -11,10 +11,15 @@ It folds *all pre-final process items* (thinking/tool calls/tool output/status/e
 - Manual (this file): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/AI_OPERATOR_MANUAL.md`
 - Install guide: `https://github.com/MaxMiksa/Codex-Workflow-Folder/blob/main/docs/INSTALL_FOR_AI.md`
 - Uninstall guide: `https://github.com/MaxMiksa/Codex-Workflow-Folder/blob/main/docs/UNINSTALL_FOR_AI.md`
-- Remote install script (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/v1.1.0/docs/remote/codex-folding-install.mjs`
-- Remote uninstall script (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/v1.1.0/docs/remote/codex-folding-uninstall.mjs`
-  - If `raw.githubusercontent.com` is blocked: `https://github.com/MaxMiksa/Codex-Workflow-Folder/raw/v1.1.0/docs/remote/codex-folding-install.mjs`
-  - If `raw.githubusercontent.com` is blocked: `https://github.com/MaxMiksa/Codex-Workflow-Folder/raw/v1.1.0/docs/remote/codex-folding-uninstall.mjs`
+- Remote install script:
+  - Latest release (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/v1.1.0/docs/remote/codex-folding-install.mjs`
+  - Latest main (recommended for cross-platform): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/codex-folding-install.mjs`
+- Remote uninstall script:
+  - Latest release (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/v1.1.0/docs/remote/codex-folding-uninstall.mjs`
+  - Latest main (recommended for cross-platform): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/codex-folding-uninstall.mjs`
+  - If `raw.githubusercontent.com` is blocked:
+    - Install: `https://github.com/MaxMiksa/Codex-Workflow-Folder/raw/main/docs/remote/codex-folding-install.mjs`
+    - Uninstall: `https://github.com/MaxMiksa/Codex-Workflow-Folder/raw/main/docs/remote/codex-folding-uninstall.mjs`
 
 ## Goal / Scope (strict)
 
@@ -27,10 +32,12 @@ Rule: “Workflow” must contain everything before the final answer (reasoning/
 
 ## Preconditions
 
-- Windows + PowerShell
 - VS Code installed
 - Codex extension installed (Publisher: OpenAI, Extension id: `openai.chatgpt`)
 - Node.js available in PATH
+- A shell to run the commands:
+  - Windows: PowerShell
+  - macOS/Linux: bash/zsh (any POSIX shell)
 
 ## Parameters (VS Code settings)
 
@@ -52,9 +59,9 @@ Do not clone. Use the remote scripts only:
 ## What gets modified on the user machine (strict)
 
 - Installed extension build artifacts (plus `*.bak` backups):
-  - `out\\extension.js`
-  - `webview\\assets\\index-*.js` (the active bundle referenced by `webview\\index.html`)
-  - `webview\\assets\\zh-CN-*.js`
+  - `out/extension.js`
+  - `webview/assets/index-*.js` (the active bundle referenced by `webview/index.html`)
+  - `webview/assets/zh-CN-*.js` (if present)
 - VS Code settings (optional):
   - Optional: set `codex.workflow.collapseByDefault` to control behavior; uninstall does not modify settings.
 
@@ -63,15 +70,18 @@ Do not clone. Use the remote scripts only:
 - Patched host file must include: `codex-workflow-collapse`
 - Patched webview file must include: `CODEX_WORKFLOW_FOLD_PATCH`
 - Patched webview file should include: `CODEX_WORKFLOW_FOLD_PATCH_V10` (tighten workflow spacing + child gap)
-- Patched `zh-CN` locale file must include: `codex.workflow.label`
+- Patched `zh-CN` locale file (if present) must include: `codex.workflow.label`
 
 ## Version mismatch strategy (required AI behavior)
 
 If the installed `openai.chatgpt` version is not exactly what this repo was tested on:
 
 1. Inspect local installed files (read-only)
-   - Find the active extension folder under `%USERPROFILE%\\.vscode\\extensions\\openai.chatgpt-*`
-   - Find the active webview entry bundle referenced by `webview\\index.html`
+   - Find the active extension folder under one of:
+     - `~/.vscode/extensions/openai.chatgpt-*` (VS Code Stable)
+     - `~/.vscode-insiders/extensions/openai.chatgpt-*` (VS Code Insiders)
+     - `~/.vscode-oss/extensions/openai.chatgpt-*` (some OSS builds / VSCodium)
+   - Find the active webview entry bundle referenced by `webview/index.html`
    - Read the three target files and see whether the patch anchors can be applied (the installer script will report failures)
 2. Decide:
    - If the same patch logic can be applied safely (anchors found; verification markers appear after patch), proceed.
