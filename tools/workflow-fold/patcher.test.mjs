@@ -12,9 +12,11 @@ test("patchExtensionHostJs injects workflow meta tag", () => {
     'async getWebviewContentProduction(e){let l=i.replace("<!-- PROD_BASE_TAG_HERE -->","X");if(p){let h=this.initialRouteMetaTag(p);h&&(l=l.replace("</head>",`${h}\\n</head>`))}return l}';
   const out = patchExtensionHostJs(input);
   assert.match(out, /codex-workflow-collapse/i);
-  assert.match(out, /CODEX_WORKFLOW_FOLD_HOST_V6/);
+  assert.match(out, /CODEX_WORKFLOW_FOLD_HOST_V7/);
   assert.match(out, /require\("vscode"\)/);
   assert.match(out, /workspace\?\.\s*getConfiguration/);
+  assert.match(out, /codex\.workflow\.timerStore\.v1/);
+  assert.match(out, /sharedObjectRepository/);
 });
 
 test("patchWebviewBundleJs injects workflow fold patch marker", () => {
@@ -25,9 +27,12 @@ test("patchWebviewBundleJs injects workflow fold patch marker", () => {
   assert.match(out, /CODEX_WORKFLOW_FOLD_PATCH_V2/);
   assert.match(out, /CODEX_WORKFLOW_FOLD_PATCH_V3/);
   assert.match(out, /CODEX_WORKFLOW_FOLD_PATCH_V4/);
-  assert.match(out, /CODEX_WORKFLOW_FOLD_PATCH_V10/);
+  assert.match(out, /CODEX_WORKFLOW_FOLD_PATCH_V11/);
   assert.match(out, /Array\.isArray/);
   assert.match(out, /workflow/);
+  assert.match(out, /codex\.workflow\.timer\./);
+  assert.match(out, /useSharedObject/);
+  assert.match(out, /conversationId/);
 });
 
 test("webview patch folds items when mapState returns {items: []}", () => {
