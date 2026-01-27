@@ -1,22 +1,28 @@
 # Install Guide (For AI Operators) — Remote-First (No Clone)
 
-> Goal: install “Workflow folding” into the installed Codex VS Code extension (`openai.chatgpt`) on Windows by running a remote, deterministic patch script with backups.
+> Goal: install “Workflow folding” into the installed Codex VS Code extension (`openai.chatgpt`) on Windows/macOS/Linux by running a remote, deterministic patch script with backups.
 
 **What this does (context for AI):** It folds *all pre-final process items* (thinking/tool calls/tool output/status/error) into a per-turn `Workflow` expandable row, so the final answer stays clean.
 
 ## Canonical URLs (this is the source of truth)
 
 - This file: `https://github.com/MaxMiksa/Codex-Workflow-Folder/blob/main/docs/INSTALL_FOR_AI.md`
-- Remote install script (single file, pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/v1.1.0/docs/remote/codex-folding-install.mjs`
-- Remote uninstall script (single file, pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/v1.1.0/docs/remote/codex-folding-uninstall.mjs`
+- Remote install script (single file):
+  - Latest release (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/v1.1.0/docs/remote/codex-folding-install.mjs`
+  - Latest main (recommended for cross-platform): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/codex-folding-install.mjs`
+- Remote uninstall script (single file):
+  - Latest release (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/v1.1.0/docs/remote/codex-folding-uninstall.mjs`
+  - Latest main (recommended for cross-platform): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/codex-folding-uninstall.mjs`
 - Manual (for user to save): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/AI_OPERATOR_MANUAL.md`
 
 ## Preconditions
 
-- Windows + PowerShell
 - VS Code installed
 - Codex extension installed (Publisher: OpenAI, Extension id: `openai.chatgpt`)
 - Node.js available in PATH
+- A shell to run the commands:
+  - Windows: PowerShell
+  - macOS/Linux: bash/zsh (any POSIX shell)
 
 ## Strict Rules (anti-improvisation)
 
@@ -28,17 +34,24 @@
 ## Steps (what to do)
 
 1. Download the remote install script
-   - Save to a temporary folder:
-     - `Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/v1.1.0/docs/remote/codex-folding-install.mjs" -OutFile "$env:TEMP\\codex-folding-install.mjs"`
-   - If `raw.githubusercontent.com` is blocked in the user’s network, use GitHub’s alternative raw endpoint:
-     - `Invoke-WebRequest -Uri "https://github.com/MaxMiksa/Codex-Workflow-Folder/raw/v1.1.0/docs/remote/codex-folding-install.mjs" -OutFile "$env:TEMP\\codex-folding-install.mjs"`
+   - Windows (PowerShell):
+     - `Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/codex-folding-install.mjs" -OutFile "$env:TEMP\\codex-folding-install.mjs"`
+     - If `raw.githubusercontent.com` is blocked: `Invoke-WebRequest -Uri "https://github.com/MaxMiksa/Codex-Workflow-Folder/raw/main/docs/remote/codex-folding-install.mjs" -OutFile "$env:TEMP\\codex-folding-install.mjs"`
+   - macOS/Linux (bash/zsh):
+     - `curl -L "https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/codex-folding-install.mjs" -o "${TMPDIR:-/tmp}/codex-folding-install.mjs"`
+     - If `raw.githubusercontent.com` is blocked: `curl -L "https://github.com/MaxMiksa/Codex-Workflow-Folder/raw/main/docs/remote/codex-folding-install.mjs" -o "${TMPDIR:-/tmp}/codex-folding-install.mjs"`
 
 2. Run install script (patches extension + saves manual)
-   - `node "$env:TEMP\\codex-folding-install.mjs"`
+   - Windows (PowerShell): `node "$env:TEMP\\codex-folding-install.mjs"`
+   - macOS/Linux (bash/zsh): `node "${TMPDIR:-/tmp}/codex-folding-install.mjs"`
    - Expected behavior:
-     - Finds the installed extension folder under `%USERPROFILE%\\.vscode\\extensions\\openai.chatgpt-*`
+     - Finds the installed extension folder under one of:
+       - `~/.vscode/extensions/openai.chatgpt-*` (VS Code Stable)
+       - `~/.vscode-insiders/extensions/openai.chatgpt-*` (VS Code Insiders)
+       - `~/.vscode-oss/extensions/openai.chatgpt-*` (some OSS builds / VSCodium)
      - Checks key anchors in the three target files (to decide compatibility)
-     - Patches exactly 3 files and creates `*.bak` backups (only once)
+     - Patches 2–3 files and creates `*.bak` backups (only once)
+       - `zh-CN-*.js` may be absent on some builds; the installer will warn and continue
      - Downloads this project’s AI manual and saves it to a user-friendly location (prefer `Downloads`) so the user can keep it
      - Prints absolute paths of modified files and backups
 
@@ -47,7 +60,7 @@
 
 ## Optional: setting (easier than `.codex/config.toml`)
 
-This project does **not** use `%USERPROFILE%\\.codex\\config.toml` anymore. The behavior is controlled via **VS Code Settings**:
+This project does **not** use `~/.codex/config.toml` anymore. The behavior is controlled via **VS Code Settings**:
 
 - Key: `codex.workflow.collapseByDefault`
 - Values:
@@ -59,9 +72,9 @@ This project does **not** use `%USERPROFILE%\\.codex\\config.toml` anymore. The 
 ## What gets modified on the user machine
 
 - Installed extension build artifacts (plus `*.bak` backups):
-  - `out\\extension.js`
-  - `webview\\assets\\index-*.js` (the active bundle referenced by `webview\\index.html`)
-  - `webview\\assets\\zh-CN-*.js`
+  - `out/extension.js`
+  - `webview/assets/index-*.js` (the active bundle referenced by `webview/index.html`)
+  - `webview/assets/zh-CN-*.js` (if present)
 - VS Code settings (optional; installer does not modify it):
   - You may add `codex.workflow.collapseByDefault` to VS Code `settings.json` if you want `"expand"` or `"disable"`.
 

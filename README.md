@@ -10,7 +10,7 @@
 
 ✅ **Auto-fold Lengthy Workflows | Customizable Settings | One-Prompt AI Installation**  
 ✅ **Hide the "Thinking" Noise | Keep Your Chat Clean & Focused | Bilingual (EN/中文)**  
-✅ **Designed for Windows | Update-Proof Design**  
+✅ **Cross-Platform (Windows/macOS/Linux) | Update-Proof Design**  
 
 Want a clean and easy-to-browse Codex? Tired of Codex's long workflows? It's super simple! Just copy one sentence to Codex to enable folding of Codex's thought process and command execution flow in VS Code.
 
