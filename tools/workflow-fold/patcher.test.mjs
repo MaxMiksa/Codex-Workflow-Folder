@@ -27,12 +27,14 @@ test("patchWebviewBundleJs injects workflow fold patch marker", () => {
   assert.match(out, /CODEX_WORKFLOW_FOLD_PATCH_V2/);
   assert.match(out, /CODEX_WORKFLOW_FOLD_PATCH_V3/);
   assert.match(out, /CODEX_WORKFLOW_FOLD_PATCH_V4/);
-  assert.match(out, /CODEX_WORKFLOW_FOLD_PATCH_V11/);
+  assert.match(out, /CODEX_WORKFLOW_FOLD_PATCH_V12/);
   assert.match(out, /Array\.isArray/);
   assert.match(out, /workflow/);
   assert.match(out, /codex\.workflow\.timer\./);
   assert.match(out, /useSharedObject/);
   assert.match(out, /conversationId/);
+  assert.match(out, /const footer=expanded/);
+  assert.match(out, /border-t/);
 });
 
 test("webview patch folds items when mapState returns {items: []}", () => {
