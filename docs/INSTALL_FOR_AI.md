@@ -6,10 +6,10 @@
 
 ## Canonical URLs (this is the source of truth)
 
-- This file: `https://github.com/MaxMiksa/Codex-Folding/blob/main/docs/INSTALL_FOR_AI.md`
-- Remote install script (single file, pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/v1.1.0/docs/remote/codex-folding-install.mjs`
-- Remote uninstall script (single file, pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/v1.1.0/docs/remote/codex-folding-uninstall.mjs`
-- Manual (for user to save): `https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/main/docs/AI_OPERATOR_MANUAL.md`
+- This file: `https://github.com/MaxMiksa/Codex-Workflow-Folder/blob/main/docs/INSTALL_FOR_AI.md`
+- Remote install script (single file, pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/v1.1.0/docs/remote/codex-folding-install.mjs`
+- Remote uninstall script (single file, pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/v1.1.0/docs/remote/codex-folding-uninstall.mjs`
+- Manual (for user to save): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/AI_OPERATOR_MANUAL.md`
 
 ## Preconditions
 
@@ -29,9 +29,9 @@
 
 1. Download the remote install script
    - Save to a temporary folder:
-     - `Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MaxMiksa/Codex-Folding/v1.1.0/docs/remote/codex-folding-install.mjs" -OutFile "$env:TEMP\\codex-folding-install.mjs"`
+     - `Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/v1.1.0/docs/remote/codex-folding-install.mjs" -OutFile "$env:TEMP\\codex-folding-install.mjs"`
    - If `raw.githubusercontent.com` is blocked in the user’s network, use GitHub’s alternative raw endpoint:
-     - `Invoke-WebRequest -Uri "https://github.com/MaxMiksa/Codex-Folding/raw/v1.1.0/docs/remote/codex-folding-install.mjs" -OutFile "$env:TEMP\\codex-folding-install.mjs"`
+     - `Invoke-WebRequest -Uri "https://github.com/MaxMiksa/Codex-Workflow-Folder/raw/v1.1.0/docs/remote/codex-folding-install.mjs" -OutFile "$env:TEMP\\codex-folding-install.mjs"`
 
 2. Run install script (patches extension + saves manual)
    - `node "$env:TEMP\\codex-folding-install.mjs"`
