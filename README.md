@@ -1,21 +1,12 @@
 <h1 align="center">Codex Workflow Folder</h1>
 
-<table width="100%">
-  <tr>
-    <td align="center">
-      <table align="center">
-        <tr>
-          <td align="center">
-            <a href="#"><img alt="Version" src="https://img.shields.io/badge/version-v1.1.0-blue.svg" /></a>
-            <a href="#"><img alt="VS Code" src="https://img.shields.io/badge/VS%20Code-extension-007ACC.svg" /></a>
-            <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-green.svg" /></a>
-          </td>
-          <td align="right" style="padding-left:12px;"><a href="README-zh.md">中文说明</a></td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-</table>
+<p align="center">
+  <a href="#"><img alt="Version" src="https://img.shields.io/badge/version-v1.1.0-blue.svg" /></a>
+  <a href="#"><img alt="VS Code" src="https://img.shields.io/badge/VS%20Code-extension-007ACC.svg" /></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-green.svg" /></a>
+  &nbsp;&nbsp;
+  <a href="README-zh.md">中文说明</a>
+</p>
 
 ✅ **Auto-fold Lengthy Workflows | Customizable Settings | One-Prompt AI Installation**  
 ✅ **Hide the "Thinking" Noise | Keep Your Chat Clean & Focused | Bilingual (EN/中文)**  
@@ -23,16 +14,20 @@
 
 Want a clean and easy-to-browse Codex? Tired of Codex's long workflows? It's super simple! Just copy one sentence to Codex to enable folding of Codex's thought process and command execution flow in VS Code.
 
-<div align="center" style="display: flex; align-items: center; justify-content: center; gap: 20px;">
-  <div style="flex: 1; text-align: center;">
-    <h3>Before</h3>
-    <img src="Presentation/before-folding.jpg" width="100%" alt="Before: Long workflow" style="border: 1px solid #ccc; border-radius: 8px;" />
-  </div>
-  <div style="font-size: 40px;">➡️</div>
-  <div style="flex: 1; text-align: center;">
-    <h3>After</h3>
-    <img src="Presentation/after-folding.png" width="100%" alt="After: Clean view" style="border: 1px solid #ccc; border-radius: 8px;" />
-  </div>
+<div align="center">
+  <table style="border: none; border-collapse: collapse;">
+    <tr>
+      <td align="center" style="border: none; vertical-align: middle;">
+        <h3>Before</h3>
+        <img src="Presentation/before-folding.jpg" width="380" alt="Before: Long workflow" style="border: 1px solid #ccc; border-radius: 8px;" />
+      </td>
+      <td align="center" style="border: none; vertical-align: middle; font-size: 32px; padding: 0 20px;">➡️</td>
+      <td align="center" style="border: none; vertical-align: middle;">
+        <h3>After</h3>
+        <img src="Presentation/after-folding.png" width="380" alt="After: Clean view" style="border: 1px solid #ccc; border-radius: 8px;" />
+      </td>
+    </tr>
+  </table>
 </div>
 
 ## Features
@@ -46,7 +41,7 @@ Want a clean and easy-to-browse Codex? Tired of Codex's long workflows? It's sup
 
 ## 🚀 Quick Start: Install & Usage
 
-### 1. Install
+### 📥 Install
 Copy and paste the following prompt to Codex:
 
 ```text
@@ -55,13 +50,16 @@ Strictly follow https://github.com/MaxMiksa/Codex-Workflow-Folder/blob/main/docs
 
 > 👉 **Important:** Restart VS Code after the AI finishes the task.
 
-### 2. Configure (Optional)
+<details>
+  <summary><b>Personal Default Configuration (Optional)</b></summary>
+
 You can customize behavior in **VS Code Settings** (`Ctrl+,`) by searching for:
 `codex.workflow.collapseByDefault`
 
 - `"collapse"` (Default): Auto-fold workflows.
 - `"expand"`: Show workflows expanded by default.
 - `"disable"`: Turn off the feature completely.
+</details>
 
 ### 🗑️ Uninstall
 To remove the feature, send this prompt to Codex and restart VS Code:
