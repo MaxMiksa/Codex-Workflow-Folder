@@ -1,6 +1,6 @@
 {
   "name": "codex-workflow-folder",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": false,
   "description": "Adds per-turn Workflow folding to the Codex VS Code extension (openai.chatgpt) via a safe, idempotent patch.",
   "type": "module",
