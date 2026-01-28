@@ -68,6 +68,8 @@
 严格按照 https://github.com/MaxMiksa/Codex-Workflow-Folder/blob/main/docs/UNINSTALL_FOR_AI.md 的步骤卸载该功能，不要自由发挥。
 ```
 
+## 其他
+
 <details>
   <summary>环境要求与限制</summary>
 
@@ -81,24 +83,18 @@
 - 运行测试：`npm test`
 - 应用补丁：`npm run apply`
 - 验证（不落盘）：`npm run verify`
+- 技术栈：Node.js（ESM）、JavaScript/Markdown、VS Code 扩展 host/webview 产物补丁
 </details>
 
 <details>
-  <summary>开发栈</summary>
+  <summary>排错 / 已知问题</summary>
 
-1. Packages & Frameworks
-   - Node.js（ESM）
-2. Interfaces & Services
-   - VS Code 扩展 host/webview 产物补丁
-3. Languages
-   - JavaScript, Markdown
-</details>
-
-<details>
-  <summary>FAQ / 排错</summary>
-
-- 没生效：重启 VS Code。
-- 扩展更新后失效：重新执行 `npm run apply`。
+- 没生效：安装/卸载后需重启 VS Code。
+- 扩展更新后失效：官方扩展更新可能覆盖被 patch 的产物；更新后重新执行安装 Prompt（或运行 `npm run apply`）。
+- Remote 环境不保证：Remote-SSH / WSL / Dev Containers 可能把扩展放在服务器侧路径（例如 `.vscode-server/extensions`），默认脚本可能 patch 到错误位置。
+- 找不到 Node：安装脚本需要 `node` 可在 `PATH` 中被找到。
+- 网络受限：如 `raw.githubusercontent.com` 被阻断，请改用 `docs/INSTALL_FOR_AI.md` 中的 GitHub `.../raw/...` 备用链接。
+- 版本漂移：如果脚本提示找不到锚点/匹配失败，说明上游扩展结构变更；请停止并提交 Issue，附上扩展版本号与报错信息。
 </details>
 
 ## 🤝 贡献与联系

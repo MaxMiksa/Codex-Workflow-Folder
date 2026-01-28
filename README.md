@@ -69,6 +69,8 @@ To remove the feature, send this prompt to Codex and restart VS Code:
 Strictly follow https://github.com/MaxMiksa/Codex-Workflow-Folder/blob/main/docs/UNINSTALL_FOR_AI.md to uninstall this feature. Do not improvise.
 ```
 
+## More Info
+
 <details>
   <summary>Requirements & Limits</summary>
 
@@ -82,24 +84,18 @@ Strictly follow https://github.com/MaxMiksa/Codex-Workflow-Folder/blob/main/docs
 - Run tests: `npm test`
 - Apply patch: `npm run apply`
 - Verify (no-op): `npm run verify`
+- Stack: Node.js (ESM), JS/Markdown, VS Code extension host + webview bundle patching
 </details>
 
 <details>
-  <summary>Development Stack</summary>
+  <summary>Troubleshooting / Known Issues</summary>
 
-1. Packages & Frameworks
-   - Node.js (ESM)
-2. Interfaces & Services
-   - VS Code extension host JS + webview bundle patching
-3. Languages
-   - JavaScript, Markdown
-</details>
-
-<details>
-  <summary>FAQ / Troubleshooting</summary>
-
-- If nothing changes, restart VS Code.
-- If VS Code updates the extension, re-run `npm run apply`.
+- Restart required: if nothing changes, restart VS Code after install/uninstall.
+- Official extension updates: updates can overwrite patched artifacts; re-run the install prompt (or `npm run apply`) after an update.
+- Remote environments: Remote-SSH / WSL / Dev Containers may store extensions under server-side paths (e.g. `.vscode-server/extensions`), so the default script may patch the wrong place.
+- Node missing: the install script requires `node` available in `PATH`.
+- Network blocked: if `raw.githubusercontent.com` is blocked, use the GitHub `.../raw/...` fallback URLs in `docs/INSTALL_FOR_AI.md`.
+- Version drift: if the script reports missing anchors, upstream changed; stop and open an issue with your extension version and the reported mismatch.
 </details>
 
 ## 🤝 Contribution & Contact
