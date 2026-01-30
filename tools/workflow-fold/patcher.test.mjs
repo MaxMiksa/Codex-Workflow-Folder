@@ -27,7 +27,7 @@ test("patchWebviewBundleJs injects workflow fold patch marker", () => {
   assert.match(out, /CODEX_WORKFLOW_FOLD_PATCH_V2/);
   assert.match(out, /CODEX_WORKFLOW_FOLD_PATCH_V3/);
   assert.match(out, /CODEX_WORKFLOW_FOLD_PATCH_V4/);
-  assert.match(out, /CODEX_WORKFLOW_FOLD_PATCH_V13/);
+  assert.match(out, /CODEX_WORKFLOW_FOLD_PATCH_V14/);
   assert.ok(
     out.includes("jsxRuntimeExports.jsx(__CodexWorkflowItemInner,{rt},k)"),
     "workflow item should be mounted with a stable per-turn key so useSharedObject does not get stuck on the first key"
