@@ -14,6 +14,8 @@ Desktop.ini
 # Local staging
 .serena/
 clone/
+openspec/
+changes/
 docs/plans/
 docs/FILES_CHANGED_ABSOLUTE.md
 docs/AI_NEWCOMER_WALKTHROUGH.md
