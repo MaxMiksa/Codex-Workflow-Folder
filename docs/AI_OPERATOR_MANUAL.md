@@ -6,6 +6,15 @@ This manual is written for an AI agent to perform a deterministic install/uninst
 
 It folds *all pre-final process items* (thinking/tool calls/tool output/status/error) into a per-turn `Workflow` expandable row, so the final answer stays clean. When expanded, the content renders exactly as upstream (no extra UI changes besides the `Workflow` row).
 
+## Version Routing (important)
+
+This project now uses version-separated tracks:
+
+- `openai.chatgpt <= 0.4.70`: legacy installer/uninstaller track (`v70-and-earlier`) in active use.
+- `openai.chatgpt >= 0.4.71`: dedicated track (`v71-plus`) reserved for new implementation.
+
+Current phase note: `v71-plus` scripts are placeholders and intentionally exit with a clear error.
+
 ## Canonical URLs (remote-first, no clone)
 
 - Manual (this file): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/AI_OPERATOR_MANUAL.md`
@@ -14,9 +23,13 @@ It folds *all pre-final process items* (thinking/tool calls/tool output/status/e
 - Remote install script:
   - Latest release (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/v1.2.0/docs/remote/codex-folding-install.mjs`
   - Latest main (recommended for cross-platform): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/codex-folding-install.mjs`
+  - Legacy direct track (`<=0.4.70`): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/v70-and-earlier/codex-folding-install.mjs`
+  - 71+ placeholder track: `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/v71-plus/codex-folding-install.mjs`
 - Remote uninstall script:
   - Latest release (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/v1.2.0/docs/remote/codex-folding-uninstall.mjs`
   - Latest main (recommended for cross-platform): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/codex-folding-uninstall.mjs`
+  - Legacy direct track (`<=0.4.70`): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/v70-and-earlier/codex-folding-uninstall.mjs`
+  - 71+ placeholder track: `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/v71-plus/codex-folding-uninstall.mjs`
   - If `raw.githubusercontent.com` is blocked:
     - Install: `https://github.com/MaxMiksa/Codex-Workflow-Folder/raw/main/docs/remote/codex-folding-install.mjs`
     - Uninstall: `https://github.com/MaxMiksa/Codex-Workflow-Folder/raw/main/docs/remote/codex-folding-uninstall.mjs`
@@ -83,7 +96,11 @@ If the installed `openai.chatgpt` version is not exactly what this repo was test
      - `~/.vscode-oss/extensions/openai.chatgpt-*` (some OSS builds / VSCodium)
    - Find the active webview entry bundle referenced by `webview/index.html`
    - Read the three target files and see whether the patch anchors can be applied (the installer script will report failures)
-2. Decide:
+2. Route by version first:
+   - `<=0.4.70`: continue with legacy track.
+   - `>=0.4.71`: route to `v71-plus` track (placeholder in this phase; should fail fast with a clear message).
+
+3. Only for active track (`<=0.4.70`) decide compatibility:
    - If the same patch logic can be applied safely (anchors found; verification markers appear after patch), proceed.
    - If patch logic cannot be reused (anchors missing / structure materially different), STOP and explain what differs and what would be required (e.g. pin extension version or create a new patch profile).
 
