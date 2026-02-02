@@ -4,15 +4,28 @@
 
 **What this does (context for AI):** It folds *all pre-final process items* (thinking/tool calls/tool output/status/error) into a per-turn `Workflow` expandable row, so the final answer stays clean.
 
+## Version Routing (important)
+
+This project now separates install tracks by extension version:
+
+- `openai.chatgpt <= 0.4.70`: uses the legacy track (`v70-and-earlier`) and is supported in this phase.
+- `openai.chatgpt >= 0.4.71`: routes to the `v71-plus` track, which is currently a placeholder and intentionally not implemented yet.
+
+Default behavior: the main installer entry (`docs/remote/codex-folding-install.mjs`) auto-detects the local extension version and routes accordingly.
+
 ## Canonical URLs (this is the source of truth)
 
 - This file: `https://github.com/MaxMiksa/Codex-Workflow-Folder/blob/main/docs/INSTALL_FOR_AI.md`
 - Remote install script (single file):
   - Latest release (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/v1.2.0/docs/remote/codex-folding-install.mjs`
   - Latest main (recommended for cross-platform): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/codex-folding-install.mjs`
+  - Legacy direct track (`<=0.4.70`): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/v70-and-earlier/codex-folding-install.mjs`
+  - 71+ placeholder track: `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/v71-plus/codex-folding-install.mjs`
 - Remote uninstall script (single file):
   - Latest release (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/v1.2.0/docs/remote/codex-folding-uninstall.mjs`
   - Latest main (recommended for cross-platform): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/codex-folding-uninstall.mjs`
+  - Legacy direct track (`<=0.4.70`): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/v70-and-earlier/codex-folding-uninstall.mjs`
+  - 71+ placeholder track: `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/v71-plus/codex-folding-uninstall.mjs`
 - Manual (for user to save): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/AI_OPERATOR_MANUAL.md`
 
 ## Preconditions
@@ -54,6 +67,9 @@
        - `zh-CN-*.js` may be absent on some builds; the installer will warn and continue
      - Downloads this project’s AI manual and saves it to a user-friendly location (prefer `Downloads`) so the user can keep it
      - Prints absolute paths of modified files and backups
+     - Auto-routing result:
+       - If version is `<=0.4.70`: continues with legacy installer logic.
+       - If version is `>=0.4.71`: exits with a clear placeholder error for `v71-plus` (non-zero exit code by design).
 
 3. Restart VS Code
    - Required for the extension webview to pick up patched artifacts.
@@ -83,6 +99,13 @@ This project does **not** use `~/.codex/config.toml` anymore. The behavior is co
 1. Download script: ensures “no-clone” and eliminates ambiguity about what code to run.
 2. Run script: performs deterministic patching (3 files), creates backups for safe rollback, and saves the manual for the user.
 3. Restart VS Code: the extension/webview assets are loaded at runtime; restart is the simplest and most reliable way to pick up patched artifacts.
+
+## Optional: direct track install links
+
+Use these only when you explicitly want to bypass auto-routing:
+
+- Legacy (`<=0.4.70`): `docs/remote/v70-and-earlier/codex-folding-install.mjs`
+- 71+ placeholder: `docs/remote/v71-plus/codex-folding-install.mjs`
 
 
 

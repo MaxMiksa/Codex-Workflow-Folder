@@ -13,6 +13,29 @@ function log(message) {
   process.stdout.write(`${message}\n`);
 }
 
+function parseSemverParts(version) {
+  const m = String(version || "").trim().match(/^(\d+)\.(\d+)\.(\d+)$/);
+  if (!m) return null;
+  return [Number(m[1]), Number(m[2]), Number(m[3])];
+}
+
+function compareSemver(a, b) {
+  const pa = parseSemverParts(a);
+  const pb = parseSemverParts(b);
+  if (!pa || !pb) return null;
+  for (let i = 0; i < 3; i += 1) {
+    if (pa[i] > pb[i]) return 1;
+    if (pa[i] < pb[i]) return -1;
+  }
+  return 0;
+}
+
+function readVersionFromExtensionDirName(extDir) {
+  const base = path.basename(extDir);
+  const m = base.match(/^openai\.chatgpt-(\d+\.\d+\.\d+)/);
+  return m ? m[1] : null;
+}
+
 async function fileExists(p) {
   try {
     await fs.access(p);
@@ -282,9 +305,29 @@ async function readExtensionVersion(extDir) {
 }
 
 async function main() {
+  const VERSION_SPLIT = "0.4.71";
   const extDir = await findLatestOpenAiChatgptExtensionDir();
-  const { version } = await readExtensionVersion(extDir);
+  const { version: versionFromPkg } = await readExtensionVersion(extDir);
+  const version = versionFromPkg || readVersionFromExtensionDirName(extDir);
+  const cmp = compareSemver(version, VERSION_SPLIT);
+  if (cmp == null) {
+    throw new Error(
+      `Cannot parse extension version for routing (detected: ${versionFromPkg || "unknown"}). Please check ${path.join(extDir, "package.json")}.`
+    );
+  }
   log(`Extension: ${extDir}${version ? ` (version: ${version})` : ""}`);
+
+  if (cmp >= 0) {
+    throw new Error(
+      [
+        `Detected openai.chatgpt@${version} (>= ${VERSION_SPLIT}).`,
+        "This main installer now routes 71+ to a separate track.",
+        "The 71+ installer is intentionally a placeholder in this phase and is not implemented yet.",
+        "Placeholder path: docs/remote/v71-plus/codex-folding-install.mjs",
+      ].join("\n")
+    );
+  }
+  log(`Route: <=0.4.70 legacy installer track (v70-and-earlier)`);
 
   const hostJs = path.join(extDir, "out", "extension.js");
   const webviewJs = await readWebviewEntryJsPath(extDir);
