@@ -1,0 +1,389 @@
+#!/usr/bin/env node
+import fs from "node:fs/promises";
+import path from "node:path";
+import os from "node:os";
+import https from "node:https";
+
+function die(message) {
+  process.stderr.write(`${message}\n`);
+  process.exit(1);
+}
+
+function log(message) {
+  process.stdout.write(`${message}\n`);
+}
+
+function parseSemverParts(version) {
+  const m = String(version || "").trim().match(/^(\d+)\.(\d+)\.(\d+)$/);
+  if (!m) return null;
+  return [Number(m[1]), Number(m[2]), Number(m[3])];
+}
+
+function compareSemver(a, b) {
+  const pa = parseSemverParts(a);
+  const pb = parseSemverParts(b);
+  if (!pa || !pb) return null;
+  for (let i = 0; i < 3; i += 1) {
+    if (pa[i] > pb[i]) return 1;
+    if (pa[i] < pb[i]) return -1;
+  }
+  return 0;
+}
+
+function readVersionFromExtensionDirName(extDir) {
+  const base = path.basename(extDir);
+  const m = base.match(/^openai\.chatgpt-(\d+\.\d+\.\d+)/);
+  return m ? m[1] : null;
+}
+
+async function fileExists(p) {
+  try {
+    await fs.access(p);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function dirExists(p) {
+  try {
+    const s = await fs.stat(p);
+    return s.isDirectory();
+  } catch {
+    return false;
+  }
+}
+
+function getVsCodeExtensionBases() {
+  const home = os.homedir();
+  return [
+    path.join(home, ".vscode", "extensions"),
+    path.join(home, ".vscode-insiders", "extensions"),
+    path.join(home, ".vscode-oss", "extensions"),
+  ];
+}
+
+async function fetchText(url) {
+  if (typeof globalThis.fetch === "function") {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
+    return await res.text();
+  }
+
+  return await new Promise((resolve, reject) => {
+    https
+      .get(url, (res) => {
+        if (res.statusCode !== 200) {
+          reject(new Error(`HTTP ${res.statusCode} for ${url}`));
+          res.resume();
+          return;
+        }
+        res.setEncoding("utf8");
+        let data = "";
+        res.on("data", (c) => (data += c));
+        res.on("end", () => resolve(data));
+      })
+      .on("error", reject);
+  });
+}
+
+async function findLatestOpenAiChatgptExtensionDir() {
+  const bases = getVsCodeExtensionBases();
+  const existingBases = [];
+  for (const base of bases) {
+    if (await dirExists(base)) existingBases.push(base);
+  }
+
+  if (existingBases.length === 0) {
+    throw new Error(
+      `No VS Code extension directories found. Tried:\n- ${bases.join("\n- ")}`
+    );
+  }
+
+  const candidates = [];
+  for (const base of existingBases) {
+    const entries = await fs.readdir(base, { withFileTypes: true });
+    for (const e of entries) {
+      if (!e.isDirectory()) continue;
+      if (!e.name.startsWith("openai.chatgpt-")) continue;
+      candidates.push(path.join(base, e.name));
+    }
+  }
+
+  if (candidates.length === 0) {
+    throw new Error(
+      `No openai.chatgpt extension found under:\n- ${existingBases.join("\n- ")}`
+    );
+  }
+
+  const stats = await Promise.all(
+    candidates.map(async (p) => ({ p, s: await fs.stat(p) }))
+  );
+  stats.sort((a, b) => b.s.mtimeMs - a.s.mtimeMs);
+  return stats[0].p;
+}
+
+async function readWebviewEntryJsPath(extDir) {
+  const htmlPath = path.join(extDir, "webview", "index.html");
+  const html = await fs.readFile(htmlPath, "utf8");
+  const m = html.match(/src="\.\/assets\/(index-[^"]+\.js)"/);
+  if (!m) {
+    throw new Error(`Could not find webview entry JS in ${htmlPath}`);
+  }
+  return path.join(extDir, "webview", "assets", m[1]);
+}
+
+async function readZhCnLocalePath(extDir) {
+  const assetsDir = path.join(extDir, "webview", "assets");
+  const entries = (await fs.readdir(assetsDir)).filter((n) =>
+    /^zh-CN-.*\.js$/.test(n)
+  );
+  entries.sort((a, b) => a.localeCompare(b));
+  const hit = entries[0];
+  return hit ? path.join(assetsDir, hit) : null;
+}
+
+function patchExtensionHostJs(source) {
+  const v7Marker = "CODEX_WORKFLOW_FOLD_HOST_V7";
+  if (source.includes(v7Marker)) return source;
+
+  const inject =
+    '/* CODEX_WORKFLOW_FOLD_HOST_V7 */let wf="collapse";try{let vs=require("vscode"),v=vs?.workspace?.getConfiguration?.()?.get?.("codex.workflow.collapseByDefault");(v==="collapse"||v==="expand"||v==="disable")&&(wf=v)}catch{}try{if(typeof l==="string"&&!l.includes("codex-workflow-collapse")){let meta="<meta name=\\"codex-workflow-collapse\\" content=\\""+wf+"\\">\\n",l2=l.replace("</head>",meta+"</head>");l2===l&&(l2=l.replace("<head>","<head>"+meta),l2===l&&(l2=l.replace(/<head[^>]*>/,m=>m+meta))),l=l2}}catch{}try{const K=\"codex.workflow.timerStore.v1\",P=\"codex.workflow.timer.\";const self=this,gs=self?.globalState,repo=self?.sharedObjectRepository;if(self&&!self.__codexWorkflowTimerStoreInit&&gs&&repo&&typeof gs.get===\"function\"&&typeof gs.update===\"function\"&&typeof repo.get===\"function\"&&typeof repo.set===\"function\"){self.__codexWorkflowTimerStoreInit=!0;Promise.resolve(gs.get(K)).then(st=>{try{if(st&&typeof st===\"object\"){for(const k of Object.keys(st)){if(typeof k===\"string\"&&k.startsWith(P))repo.set(k,st[k])}}}catch{}}).catch(()=>{});if(!repo.__codexWorkflowTimerPersist){repo.__codexWorkflowTimerPersist=!0;const orig=repo.set.bind(repo);repo.set=function(k,v){try{if(typeof k===\"string\"&&k.startsWith(P)){Promise.resolve(gs.get(K)).then(st=>{try{const next=st&&typeof st===\"object\"?{...st}:{};v===void 0?delete next[k]:next[k]=v;return gs.update(K,next)}catch{}}).catch(()=>{})}}catch{}return orig(k,v)}}}}catch{}';
+
+  const v6Marker = "CODEX_WORKFLOW_FOLD_HOST_V6";
+  if (source.includes("CODEX_WORKFLOW_FOLD_HOST_")) {
+    if (source.includes(v6Marker)) {
+      const oldInject =
+        '/* CODEX_WORKFLOW_FOLD_HOST_V6 */let wf="collapse";try{let vs=require("vscode"),v=vs?.workspace?.getConfiguration?.()?.get?.("codex.workflow.collapseByDefault");(v==="collapse"||v==="expand"||v==="disable")&&(wf=v)}catch{}try{if(typeof l==="string"&&!l.includes("codex-workflow-collapse")){let meta="<meta name=\\"codex-workflow-collapse\\" content=\\""+wf+"\\">\\n",l2=l.replace("</head>",meta+"</head>");l2===l&&(l2=l.replace("<head>","<head>"+meta),l2===l&&(l2=l.replace(/<head[^>]*>/,m=>m+meta))),l=l2}}catch{}';
+      if (source.includes(oldInject)) return source.replace(oldInject, inject);
+    }
+
+    throw new Error(
+      "patchExtensionHostJs: previous host patch detected; restore from .bak and re-install with the latest script"
+    );
+  }
+
+  const anchor = "}return l}getWebviewContentDevelopment";
+  if (source.includes(anchor)) {
+    return source.replace(anchor, () => `}${inject}return l}getWebviewContentDevelopment`);
+  }
+
+  const fnStart = source.indexOf("async getWebviewContentProduction(e){");
+  if (fnStart === -1) {
+    throw new Error(
+      "patchExtensionHostJs: getWebviewContentProduction not found"
+    );
+  }
+
+  const returnIdx = source.indexOf("return l}", fnStart);
+  if (returnIdx === -1) {
+    throw new Error(
+      "patchExtensionHostJs: getWebviewContentProduction return not found"
+    );
+  }
+
+  return source.slice(0, returnIdx) + inject + source.slice(returnIdx);
+}
+
+function patchWebviewBundleJs(source) {
+  if (source.includes("CODEX_WORKFLOW_FOLD_PATCH_V14")) return source;
+
+  const exportIdx = source.lastIndexOf("export{");
+  if (exportIdx === -1) {
+    throw new Error('patchWebviewBundleJs: could not find trailing "export{"');
+  }
+
+  const patch = `
+/* CODEX_WORKFLOW_FOLD_PATCH */
+/* CODEX_WORKFLOW_FOLD_PATCH_V2 */
+/* CODEX_WORKFLOW_FOLD_PATCH_V3 */
+/* CODEX_WORKFLOW_FOLD_PATCH_V4 */
+/* CODEX_WORKFLOW_FOLD_PATCH_V5 */
+	/* CODEX_WORKFLOW_FOLD_PATCH_V6 */
+	/* CODEX_WORKFLOW_FOLD_PATCH_V10 */
+	/* CODEX_WORKFLOW_FOLD_PATCH_V11 */
+	/* CODEX_WORKFLOW_FOLD_PATCH_V12 */
+	/* CODEX_WORKFLOW_FOLD_PATCH_V13 */
+	/* CODEX_WORKFLOW_FOLD_PATCH_V14 */
+	function __codexWorkflowCollapseMode(){const m=globalThis.document?.querySelector('meta[name="codex-workflow-collapse"]');const v=m?.getAttribute("content")?.trim();return v==="collapse"||v==="expand"||v==="disable"?v:"collapse"}
+	function __codexWorkflowFormatElapsed(ms){const s=Math.max(0,Math.floor(ms/1e3));const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;const p=n=>String(n).padStart(2,"0");if(h>0)return \`\${h}h\${p(m)}m\${p(ss)}s\`;return \`\${m}m\${p(ss)}s\`}
+	function __codexWorkflowFormatElapsedCompact(ms,locale){const s=Math.max(0,Math.floor(ms/1e3));const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;const p=n=>String(n).padStart(2,"0");const l=String(locale??"").toLowerCase();const isZh=l.startsWith("zh");if(isZh){if(h>0)return h+" 小时 "+p(m)+" 分 "+p(ss)+" 秒";return m+" 分 "+p(ss)+" 秒"}if(h>0)return h+" h "+p(m)+" m "+p(ss)+" s";return m+" m "+p(ss)+" s"}
+	function __codexWorkflowPickBorderRadiusFromNode(node){try{const root=node instanceof Element?node:null;if(!root||!globalThis.getComputedStyle)return null;let best=null;let bestPx=0;const els=[root,...root.querySelectorAll("*")];for(const el of els){const cs=globalThis.getComputedStyle(el);if(!cs)continue;const bg=cs.backgroundColor;if(!bg||bg==="rgba(0, 0, 0, 0)"||bg==="transparent")continue;const br=cs.borderRadius;if(!br||br==="0px")continue;const m=br.match(/(\\d+(?:\\.\\d+)?)px/);if(!m)continue;const px=Number(m[1]);if(Number.isFinite(px)&&px>bestPx){bestPx=px;best=px+"px"}}return best}catch{return null}}
+	function __codexWorkflowTimerKey(conversationId,workflowId){try{const cid=conversationId==null?"unknown":String(conversationId);const wid=workflowId==null?"workflow":String(workflowId);return "codex.workflow.timer."+cid+"."+wid}catch{return "codex.workflow.timer.unknown"}}
+function __codexWorkflowFoldItems(items,mode,turnIsRunning){if(mode==="disable")return items;if(!Array.isArray(items))return items;const out=[];let inTurn=!1;let children=[];let turnIndex=-1;let lastWorkflow=null;const pushWorkflow=()=>{if(children.length===0)return;const wf={type:"workflow",id:\`workflow-\${turnIndex}\`,children,defaultCollapsed:mode==="collapse"};out.push(wf),lastWorkflow=wf};for(const it of items){if(it?.type==="user-message"){inTurn=!0;turnIndex++;out.push(it);children=[];continue}if(inTurn&&it?.type==="assistant-message"){pushWorkflow();out.push(it);inTurn=!1;children=[];continue}if(inTurn&&it?.type==="plan"){out.push(it);continue}if(inTurn)children.push(it);else out.push(it)}inTurn&&pushWorkflow();typeof turnIsRunning===\"boolean\"&&lastWorkflow&&(lastWorkflow.__codexIsRunning=turnIsRunning);return out}
+const __codexOrigMapStateToLocalConversationItems=typeof mapStateToLocalConversationItems==="function"?mapStateToLocalConversationItems:null;
+function __codexWorkflowStatusIsRunning(st){if(typeof st===\"string\"){const s=st.toLowerCase();return s===\"inprogress\"||s===\"running\"||s===\"pending\"||s===\"in_progress\"||s.includes(\"progress\")}return!!st?.isPending||!!st?.inProgress}
+if(__codexOrigMapStateToLocalConversationItems){try{mapStateToLocalConversationItems=function(rt,Ye){const res=__codexOrigMapStateToLocalConversationItems(rt,Ye);const mode=__codexWorkflowCollapseMode();if(mode==="disable")return res;const st=Array.isArray(res)?rt?.status:(res?.status??rt?.status);const turnIsRunning=__codexWorkflowStatusIsRunning(st);try{if(Array.isArray(res))return __codexWorkflowFoldItems(res,mode,turnIsRunning);if(res&&Array.isArray(res.items))return{...res,items:__codexWorkflowFoldItems(res.items,mode,turnIsRunning)};if(res&&Array.isArray(res.localConversationItems))return{...res,localConversationItems:__codexWorkflowFoldItems(res.localConversationItems,mode,turnIsRunning)};if(res&&Array.isArray(res.conversationItems))return{...res,conversationItems:__codexWorkflowFoldItems(res.conversationItems,mode,turnIsRunning)};return res}catch(e){try{console.error("Codex Workflow fold failed (mapState):",e)}catch{}return res}}}catch(e){try{console.error("Codex Workflow fold failed (mapState install):",e)}catch{}}}
+const __codexOrigIsAgentItemStillRunning=typeof isAgentItemStillRunning==="function"?isAgentItemStillRunning:null;
+	if(__codexOrigIsAgentItemStillRunning){try{isAgentItemStillRunning=function(it){if(it?.type==="workflow")return(it.children??[]).some(ch=>__codexOrigIsAgentItemStillRunning(ch));return __codexOrigIsAgentItemStillRunning(it)}}catch(e){try{console.error("Codex Workflow fold failed (isRunning install):",e)}catch{}}}
+	function __codexWorkflowItemIsRunning(it){const kids=it?.children??[];for(const ch of kids){if(!ch)continue;try{if(__codexOrigIsAgentItemStillRunning&&__codexOrigIsAgentItemStillRunning(ch))return!0}catch{}if(ch.completed===!1||ch.isPending===!0)return!0;const st=ch.status??ch.state;if(st==="inProgress"||st==="pending"||st==="running")return!0}return!1}
+		function __CodexWorkflowItemInner(p){const rt=p?.rt;const {item:it}=rt??{},mode=__codexWorkflowCollapseMode();if(mode==="disable")return null;const intl=useIntl();const startedAt=reactExports.useRef(Date.now()),doneAt=reactExports.useRef(null),everRunning=reactExports.useRef(!1),persistedWritten=reactExports.useRef(!1);const timerKey=__codexWorkflowTimerKey(rt?.conversationId,it?.id);const [persisted,setPersisted]=typeof useSharedObject==="function"?useSharedObject(timerKey):[null,()=>{}];const persistedMs=typeof persisted?.durationMs==="number"&&Number.isFinite(persisted.durationMs)?persisted.durationMs:null;reactExports.useEffect(()=>{try{startedAt.current=Date.now();doneAt.current=null;everRunning.current=!1;persistedWritten.current=!1}catch{}},[timerKey]);const rootRef=reactExports.useRef(null);const [radius,setRadius]=reactExports.useState(null);reactExports.useEffect(()=>{try{const el=rootRef.current;if(!el)return;const prev=el.previousElementSibling;if(!prev)return;const r=__codexWorkflowPickBorderRadiusFromNode(prev);if(r)setRadius(r)}catch{}},[]);const isRunning=typeof it?.__codexIsRunning==="boolean"?it.__codexIsRunning:__codexWorkflowItemIsRunning(it);reactExports.useEffect(()=>{if(isRunning)everRunning.current=!0},[isRunning]);reactExports.useEffect(()=>{if(!isRunning&&doneAt.current==null)doneAt.current=Date.now();if(isRunning)doneAt.current=null},[isRunning]);const [now,setNow]=reactExports.useState(Date.now());reactExports.useEffect(()=>{if(!isRunning)return;const id=setInterval(()=>setNow(Date.now()),1e3);return()=>clearInterval(id)},[isRunning]);reactExports.useEffect(()=>{if(isRunning)return;if(!everRunning.current)return;if(persistedWritten.current)return;if(persistedMs!=null)return;if(doneAt.current==null)return;persistedWritten.current=!0;const ms=Math.max(0,doneAt.current-startedAt.current);try{setPersisted({durationMs:ms})}catch{}},[isRunning,persistedMs]);const [collapsed,setCollapsed]=reactExports.useState(it.defaultCollapsed===!0);const endTs=isRunning?now:(doneAt.current??now);const elapsedMs=!isRunning&&persistedMs!=null?persistedMs:endTs-startedAt.current;const elapsed=__codexWorkflowFormatElapsedCompact(elapsedMs,intl?.locale);const icon=isRunning?"⚡":"✅";const header=jsxRuntimeExports.jsx("div",{className:"flex items-center gap-1.5",children:jsxRuntimeExports.jsx("span",{className:"truncate",children:intl.formatMessage({id:"codex.workflow.label",defaultMessage:"Workflow",description:"Label for the Workflow folding header"})})});const meta=jsxRuntimeExports.jsx("span",{className:"text-token-description-foreground whitespace-nowrap opacity-70",children:icon+" "+elapsed});const title=jsxRuntimeExports.jsxs("div",{className:"flex min-w-0 items-baseline gap-2",children:[header,meta]});const chevron=jsxRuntimeExports.jsx(typeof SvgChevronRight!=="undefined"?SvgChevronRight:"span",{className:clsx("icon-xs transition-transform",collapsed?"rotate-0":"rotate-90")});const row=jsxRuntimeExports.jsxs("div",{className:"flex w-full items-center justify-between gap-2",children:[title,chevron]});const expanded=!collapsed&&(it.children??[]).length>0?jsxRuntimeExports.jsx("div",{className:"border-token-border/80 border-t flex flex-col gap-1 px-3 py-2",style:{backgroundColor:"#212121"},children:(it.children??[]).map((ch,idx)=>jsxRuntimeExports.jsx(__codexOrigLocalConversationItemContent,{...rt,item:ch},ch?.callId??ch?.id??\`\${it.id}-\${idx}\`))}):null;const footer=expanded?jsxRuntimeExports.jsx("button",{type:"button",className:"w-full px-3 py-2 text-left border-token-border/80 border-t",style:{backgroundColor:"#212121"},onClick:()=>setCollapsed(v=>!v),children:row}):null;return jsxRuntimeExports.jsxs("div",{ref:rootRef,className:"border-token-border/80 border overflow-hidden",style:{borderRadius:radius||"16px",marginTop:"2px",marginBottom:"6px"},children:[jsxRuntimeExports.jsx("button",{type:"button",className:"w-full px-3 py-2 text-left",style:{backgroundColor:"#212121"},onClick:()=>setCollapsed(v=>!v),children:row}),expanded,footer]})}
+const __codexOrigLocalConversationItemContent=typeof LocalConversationItemContent==="function"?LocalConversationItemContent:null;
+if(__codexOrigLocalConversationItemContent){try{LocalConversationItemContent=function(rt){if(rt?.item?.type==="workflow"){try{const k=__codexWorkflowTimerKey(rt?.conversationId,rt?.item?.id);return jsxRuntimeExports.jsx(reactExports.Fragment,{children:[jsxRuntimeExports.jsx(__CodexWorkflowItemInner,{rt},k)]})}catch(e){try{console.error("Codex Workflow fold failed (render):",e)}catch{}const it=rt?.item;return jsxRuntimeExports.jsx("div",{className:"border-token-border/80 border bg-token-input-background/70 flex flex-col gap-2 px-3 py-2",children:(it?.children??[]).map((ch,idx)=>jsxRuntimeExports.jsx(__codexOrigLocalConversationItemContent,{...rt,item:ch},ch?.callId??ch?.id??\`\${it?.id??"workflow"}-\${idx}\`))})}}return __codexOrigLocalConversationItemContent(rt)}}catch(e){try{console.error("Codex Workflow fold failed (render install):",e)}catch{}}}
+/* END CODEX_WORKFLOW_FOLD_PATCH */
+`;
+
+  if (source.includes("CODEX_WORKFLOW_FOLD_PATCH")) {
+    const start = source.indexOf("/* CODEX_WORKFLOW_FOLD_PATCH */");
+    const end = source.indexOf("/* END CODEX_WORKFLOW_FOLD_PATCH */");
+    if (start !== -1 && end !== -1) {
+      const endIdx = end + "/* END CODEX_WORKFLOW_FOLD_PATCH */".length;
+      return source.slice(0, start) + patch.trimStart() + source.slice(endIdx);
+    }
+    throw new Error("patchWebviewBundleJs: existing patch markers missing for upgrade");
+  }
+
+  return source.slice(0, exportIdx) + patch + source.slice(exportIdx);
+}
+
+function patchZhCnLocaleJs(source) {
+  if (source.includes("codex.workflow.headerSuffix")) return source;
+
+  const tail = "};export{e as default};";
+  const idx = source.indexOf(tail);
+  if (idx === -1) {
+    throw new Error("patchZhCnLocaleJs: expected locale file tail not found");
+  }
+
+  const additions =
+    ',"codex.workflow.label":"工作流","codex.workflow.status.working":"进行中","codex.workflow.status.done":"完成","codex.workflow.headerSuffix":"（{status}，{elapsed}）"';
+
+  return source.replace(tail, `${additions}${tail}`);
+}
+
+async function patchFile(filePath, patchFn) {
+  const before = await fs.readFile(filePath, "utf8");
+  const after = patchFn(before);
+  if (after === before) return { changed: false };
+
+  const backupPath = `${filePath}.bak`;
+  if (!(await fileExists(backupPath))) {
+    await fs.writeFile(backupPath, before, "utf8");
+  }
+
+  await fs.writeFile(filePath, after, "utf8");
+  return { changed: true, backupPath };
+}
+
+// Config is controlled via VS Code settings (recommended), not via ~/.codex/config.toml.
+
+async function maybeDownloadManual() {
+  const url =
+    "https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/AI_OPERATOR_MANUAL.md";
+  const content = await fetchText(url);
+
+  const candidates = [
+    path.join(os.homedir(), "Downloads"),
+    os.homedir(),
+    process.cwd(),
+  ];
+
+  for (const dir of candidates) {
+    try {
+      await fs.mkdir(dir, { recursive: true });
+      const outPath = path.join(dir, "Codex-Workflow-Folder-AI-Operator-Manual.md");
+      await fs.writeFile(outPath, content, "utf8");
+      return { outPath, url };
+    } catch {
+      // try next dir
+    }
+  }
+
+  return { outPath: null, url };
+}
+
+async function readExtensionVersion(extDir) {
+  const pkgPath = path.join(extDir, "package.json");
+  try {
+    const raw = await fs.readFile(pkgPath, "utf8");
+    const pkg = JSON.parse(raw);
+    const version = typeof pkg.version === "string" ? pkg.version : null;
+    return { version, pkgPath };
+  } catch {
+    return { version: null, pkgPath };
+  }
+}
+
+async function main() {
+  const VERSION_SPLIT = "0.4.71";
+  const extDir = await findLatestOpenAiChatgptExtensionDir();
+  const { version: versionFromPkg } = await readExtensionVersion(extDir);
+  const version = versionFromPkg || readVersionFromExtensionDirName(extDir);
+  const cmp = compareSemver(version, VERSION_SPLIT);
+  if (cmp == null) {
+    throw new Error(
+      `Cannot parse extension version for routing (detected: ${versionFromPkg || "unknown"}). Please check ${path.join(extDir, "package.json")}.`
+    );
+  }
+  log(`Extension: ${extDir}${version ? ` (version: ${version})` : ""}`);
+
+  if (cmp >= 0) {
+    throw new Error(
+      [
+        `Detected openai.chatgpt@${version} (>= ${VERSION_SPLIT}).`,
+        "This main installer now routes 71+ to a separate track.",
+        "The 71+ installer is intentionally a placeholder in this phase and is not implemented yet.",
+        "Placeholder path: docs/remote/v71-plus/codex-folding-install.mjs",
+      ].join("\n")
+    );
+  }
+  log(`Route: <=0.4.70 legacy installer track (v70-and-earlier)`);
+
+  const hostJs = path.join(extDir, "out", "extension.js");
+  const webviewJs = await readWebviewEntryJsPath(extDir);
+  const zhCnJs = await readZhCnLocalePath(extDir);
+
+  const results = [];
+  results.push({
+    file: hostJs,
+    ...(await patchFile(hostJs, patchExtensionHostJs)),
+    verifyIncludes: "CODEX_WORKFLOW_FOLD_HOST_V7",
+  });
+  results.push({
+    file: webviewJs,
+    ...(await patchFile(webviewJs, patchWebviewBundleJs)),
+    verifyIncludes: "CODEX_WORKFLOW_FOLD_PATCH_V14",
+  });
+  if (zhCnJs) {
+    results.push({
+      file: zhCnJs,
+      ...(await patchFile(zhCnJs, patchZhCnLocaleJs)),
+      verifyIncludes: "codex.workflow.label",
+    });
+  } else {
+    log("WARN: zh-CN locale bundle not found; skipping zh-CN patch.");
+  }
+
+  // Verify markers are present after patch.
+  for (const r of results) {
+    const content = await fs.readFile(r.file, "utf8");
+    if (!content.includes(r.verifyIncludes)) {
+      throw new Error(
+        `Verify failed: ${r.verifyIncludes} not found in ${r.file}`
+      );
+    }
+  }
+
+  const manual = await maybeDownloadManual();
+
+  for (const r of results) {
+    if (r.changed) {
+      log(`PATCHED: ${r.file}`);
+      if (r.backupPath) log(`  backup: ${r.backupPath}`);
+    } else {
+      log(`OK: ${r.file}`);
+    }
+  }
+  if (manual.outPath) {
+    log(`Manual saved: ${manual.outPath}`);
+  } else {
+    log(`Manual URL: ${manual.url}`);
+  }
+
+  log("");
+  log("Next step: restart VS Code to make the change take effect.");
+}
+
+await main().catch((err) => {
+  die(`Install failed: ${err?.stack || err}`);
+});
