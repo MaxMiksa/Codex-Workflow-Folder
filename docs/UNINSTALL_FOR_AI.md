@@ -2,12 +2,23 @@
 
 > Goal: uninstall “Workflow folding” from the installed Codex VS Code extension (`openai.chatgpt`) on Windows/macOS/Linux by restoring original files from `*.bak` backups (created during install).
 
+## Version Routing (important)
+
+This project now separates uninstall tracks by extension version:
+
+- `openai.chatgpt <= 0.4.70`: uses the legacy track (`v70-and-earlier`) and is supported in this phase.
+- `openai.chatgpt >= 0.4.71`: routes to the `v71-plus` track, which is currently a placeholder and intentionally not implemented yet.
+
+Default behavior: the main uninstaller entry (`docs/remote/codex-folding-uninstall.mjs`) auto-detects the local extension version and routes accordingly.
+
 ## Canonical URLs (this is the source of truth)
 
 - This file: `https://github.com/MaxMiksa/Codex-Workflow-Folder/blob/main/docs/UNINSTALL_FOR_AI.md`
 - Remote uninstall script (single file):
   - Latest release (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/v1.2.0/docs/remote/codex-folding-uninstall.mjs`
   - Latest main (recommended for cross-platform): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/codex-folding-uninstall.mjs`
+  - Legacy direct track (`<=0.4.70`): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/v70-and-earlier/codex-folding-uninstall.mjs`
+  - 71+ placeholder track: `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/v71-plus/codex-folding-uninstall.mjs`
 - Manual (for user to save): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/AI_OPERATOR_MANUAL.md`
 
 ## Preconditions
@@ -47,6 +58,9 @@
        - `zh-CN-*.js` may be absent on some builds; the uninstaller will warn and continue
      - Verifies patch markers are absent after restore
      - Prints absolute paths of restored files
+     - Auto-routing result:
+       - If version is `<=0.4.70`: continues with legacy uninstall logic.
+       - If version is `>=0.4.71`: exits with a clear placeholder error for `v71-plus` (non-zero exit code by design).
 
 3. Restart VS Code
    - Required for the extension webview to pick up restored files.
@@ -55,5 +69,12 @@
 
 - This uninstall does NOT delete `*.bak` backups.
 - The uninstall script does not modify VS Code settings; it only restores patched extension files.
+
+## Optional: direct track uninstall links
+
+Use these only when you explicitly want to bypass auto-routing:
+
+- Legacy (`<=0.4.70`): `docs/remote/v70-and-earlier/codex-folding-uninstall.mjs`
+- 71+ placeholder: `docs/remote/v71-plus/codex-folding-uninstall.mjs`
 
 
