@@ -1,19 +1,38 @@
-# Install Guide (Direct Track) — `openai.chatgpt >= 0.4.71`
+# Install Guide (Direct Track) — `openai.chatgpt == 0.4.71`
 
-> This document is a placeholder for the upcoming 71+ implementation.
+> Use this direct track only when your local extension version is exactly `0.4.71`.
 
-## Current status
+## Canonical script
 
-- Script path: `docs/remote/v71-plus/codex-folding-install.mjs`
-- Behavior: intentionally exits with a clear “not implemented yet” error in this phase.
+- `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/v71-plus/codex-folding-install.mjs`
 
-## Why this exists
+## Behavior
 
-- The project has been split into version tracks.
-- `<=0.4.70` remains on the legacy implementation.
-- `>=0.4.71` is isolated for dedicated follow-up development.
+- Adds click-to-fold behavior on the existing `Worked for {time}` row.
+- Collapsed result keeps: `user-message` + `worked-for` + final `assistant-message`.
+- Does not add a new `Workflow` bubble/label in the conversation list.
+- Fold state persists only for current VS Code session.
 
-## What to use now
+## Strict version guard
 
-- Use the auto-routing main guide: `docs/INSTALL_FOR_AI.md`
-- Or, if you are on `<=0.4.70`, use `docs/INSTALL_FOR_AI_v70-and-earlier.md`
+- This direct script **fails fast** unless the installed extension is exactly `openai.chatgpt@0.4.71`.
+- For automatic routing by version, use `docs/INSTALL_FOR_AI.md`.
+
+## Steps
+
+1. Download
+   - Windows (PowerShell):
+     - `Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/v71-plus/codex-folding-install.mjs" -OutFile "$env:TEMP\\codex-folding-install-v71.mjs"`
+   - macOS/Linux (bash/zsh):
+     - `curl -L "https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/v71-plus/codex-folding-install.mjs" -o "${TMPDIR:-/tmp}/codex-folding-install-v71.mjs"`
+
+2. Run
+   - Windows: `node "$env:TEMP\\codex-folding-install-v71.mjs"`
+   - macOS/Linux: `node "${TMPDIR:-/tmp}/codex-folding-install-v71.mjs"`
+
+3. Restart VS Code
+
+## Verification hints
+
+- Patched webview marker includes: `CODEX_WORKFLOW_FOLD_PATCH_V71_W1`
+- Host marker includes: `CODEX_WORKFLOW_FOLD_HOST_V7`
