@@ -10,7 +10,7 @@
 
 ✅ **自动折叠冗长流程 | 支持个性化配置 | AI 一句指令极速安装**  
 ✅ **隐藏“思考与工具”噪音 | 让对话界面回归清爽 | 中英双语支持**  
-✅ **跨平台（Windows/macOS/Linux） | 无惧官方版本更新**  
+✅ **跨平台（Windows/macOS/Linux） | 版本分轨安装（71+ 轨道开发中）**  
 
 想拥有一个整洁且**便于上下浏览**的codex？厌倦了codex中长长的workflow？  
 超级简单！**仅需复制一句话**给codex，你就能够在vscode中手动折叠codex的思考与命令执行流程。
@@ -48,6 +48,8 @@
 ```text
 严格按照 https://github.com/MaxMiksa/Codex-Workflow-Folder/blob/main/docs/INSTALL_FOR_AI.md 的步骤安装该功能，不要自由发挥。
 ```
+
+> 说明：安装脚本现在会按本地扩展版本自动分流（`<=0.4.70` 走 legacy 轨道，`>=0.4.71` 走 71+ 独立轨道占位）。
 
 > 👉 **重要：** AI 执行完毕后，请 **重启 VS Code** 以生效。
 
