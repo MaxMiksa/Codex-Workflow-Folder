@@ -186,6 +186,18 @@ function patchExtensionHostJs(source) {
 }
 
 function patchWebviewBundleJs(source) {
+  if (source.includes("CODEX_WORKFLOW_FOLD_PATCH_V71_W1")) return source;
+
+  const looksLikeV71 =
+    source.includes("const s=JJe(t.status);return{items:aet({items:n,status:s,turnStartedAtMs:t.turnStartedAtMs??null,finalAssistantStartedAtMs:t.finalAssistantStartedAtMs??null}),status:s,cwd:t.params?.cwd?t.params.cwd:null,collaborationMode:t.params?.collaborationMode??null}}function aet(") &&
+    source.includes("function k2n(t){") &&
+    source.includes('case"worked-for":') &&
+    !source.includes("function mapStateToLocalConversationItems");
+
+  if (looksLikeV71) {
+    return patchWebviewBundleJsV71(source);
+  }
+
   if (source.includes("CODEX_WORKFLOW_FOLD_PATCH_V14")) return source;
 
   const exportIdx = source.lastIndexOf("export{");
@@ -234,6 +246,67 @@ if(__codexOrigLocalConversationItemContent){try{LocalConversationItemContent=fun
   }
 
   return source.slice(0, exportIdx) + patch + source.slice(exportIdx);
+}
+
+function patchWebviewBundleJsV71(source) {
+  if (source.includes("CODEX_WORKFLOW_FOLD_PATCH_V71_W1")) return source;
+
+  if (source.includes("CODEX_WORKFLOW_FOLD_PATCH")) {
+    throw new Error(
+      "patchWebviewBundleJsV71: previous workflow patch detected; restore from .bak before applying 0.4.71 patch"
+    );
+  }
+
+  const qkAnchor =
+    "const s=JJe(t.status);return{items:aet({items:n,status:s,turnStartedAtMs:t.turnStartedAtMs??null,finalAssistantStartedAtMs:t.finalAssistantStartedAtMs??null}),status:s,cwd:t.params?.cwd?t.params.cwd:null,collaborationMode:t.params?.collaborationMode??null}}function aet(";
+  const workedCaseAnchor =
+    'case"worked-for":{let f;return e[38]!==n.timeLabel?(f=p.jsx(k2n,{timeLabel:n.timeLabel}),e[38]=n.timeLabel,e[39]=f):f=e[39],f}';
+
+  if (!source.includes(qkAnchor)) {
+    throw new Error("patchWebviewBundleJsV71: qK anchor not found (only supports openai.chatgpt@0.4.71)");
+  }
+  if (!source.includes("function k2n(t){")) {
+    throw new Error("patchWebviewBundleJsV71: k2n anchor not found (only supports openai.chatgpt@0.4.71)");
+  }
+  if (!source.includes(workedCaseAnchor)) {
+    throw new Error("patchWebviewBundleJsV71: worked-for render anchor not found (only supports openai.chatgpt@0.4.71)");
+  }
+
+  const qkReplacement =
+    "const s=JJe(t.status),__cwfMode=__codexWorkflowCollapseModeV71(),__cwfItems=aet({items:n,status:s,turnStartedAtMs:t.turnStartedAtMs??null,finalAssistantStartedAtMs:t.finalAssistantStartedAtMs??null}),__cwfOut=__codexWorkflowApplyV71({items:__cwfItems,mode:__cwfMode,turn:t,status:s});return{items:__cwfOut,status:s,cwd:t.params?.cwd?t.params.cwd:null,collaborationMode:t.params?.collaborationMode??null}}function aet(";
+  const workedCaseReplacement =
+    'case"worked-for":return p.jsx(__codexWorkflowWorkedForRowV71,{item:n});';
+
+  let out = source.replace(qkAnchor, qkReplacement);
+  if (out === source) {
+    throw new Error("patchWebviewBundleJsV71: failed to rewrite qK return segment");
+  }
+
+  const out2 = out.replace(workedCaseAnchor, workedCaseReplacement);
+  if (out2 === out) {
+    throw new Error("patchWebviewBundleJsV71: failed to rewrite worked-for case segment");
+  }
+  out = out2;
+
+  const patch = `
+/* CODEX_WORKFLOW_FOLD_PATCH_V71 */
+/* CODEX_WORKFLOW_FOLD_PATCH_V71_W1 */
+const __codexWorkflowCollapsedTurnsV71=globalThis.__codexWorkflowCollapsedTurnsV71 instanceof Map?globalThis.__codexWorkflowCollapsedTurnsV71:new Map;globalThis.__codexWorkflowCollapsedTurnsV71=__codexWorkflowCollapsedTurnsV71;const __codexWorkflowListenersV71=globalThis.__codexWorkflowListenersV71 instanceof Set?globalThis.__codexWorkflowListenersV71:new Set;globalThis.__codexWorkflowListenersV71=__codexWorkflowListenersV71;typeof globalThis.__codexWorkflowStoreVersionV71!=="number"&&(globalThis.__codexWorkflowStoreVersionV71=0);function __codexWorkflowEmitV71(){globalThis.__codexWorkflowStoreVersionV71=(globalThis.__codexWorkflowStoreVersionV71|0)+1;for(const l of __codexWorkflowListenersV71){try{l()}catch{}}}function __codexWorkflowSubscribeV71(l){return __codexWorkflowListenersV71.add(l),()=>{__codexWorkflowListenersV71.delete(l)}}function __codexWorkflowSnapshotV71(){return globalThis.__codexWorkflowStoreVersionV71|0}function __codexWorkflowCollapseModeV71(){const m=globalThis.document?.querySelector('meta[name="codex-workflow-collapse"]');const v=m?.getAttribute("content")?.trim();return v==="collapse"||v==="expand"||v==="disable"?v:"collapse"}function __codexWorkflowBuildTurnKeyV71(turn){try{const id=turn?.id??turn?.turnId??turn?.params?.turnId;if(id!=null)return"turn:"+String(id);const s=turn?.turnStartedAtMs??"na",f=turn?.finalAssistantStartedAtMs??"na",n=Array.isArray(turn?.items)?turn.items.length:0;return"turn-ts:"+String(s)+":"+String(f)+":"+String(n)}catch{return"turn:unknown"}}function __codexWorkflowDefaultCollapsedV71(mode){return mode==="collapse"}function __codexWorkflowIsCollapsedV71(turnKey,mode){if(mode==="disable")return!1;const cur=__codexWorkflowCollapsedTurnsV71.get(turnKey);return typeof cur==="boolean"?cur:__codexWorkflowDefaultCollapsedV71(mode)}function __codexWorkflowToggleV71(turnKey,mode){if(!turnKey||mode==="disable")return;const next=!__codexWorkflowIsCollapsedV71(turnKey,mode);__codexWorkflowCollapsedTurnsV71.set(turnKey,next);__codexWorkflowEmitV71()}function __codexWorkflowApplyV71({items,mode,turn,status}){if(!Array.isArray(items))return items;if(mode==="disable")return items;const turnKey=__codexWorkflowBuildTurnKeyV71(turn);let workedIndex=-1;for(let i=items.length-1;i>=0;i-=1){if(items[i]?.type==="worked-for"){workedIndex=i;break}}if(workedIndex<0)return items;const collapsed=__codexWorkflowIsCollapsedV71(turnKey,mode);const out=[];for(let i=0;i<items.length;i+=1){const raw=items[i];const item=i===workedIndex&&raw&&typeof raw==="object"?{...raw,__codexTurnKey:turnKey,__codexWorkflowCollapsed:collapsed}:raw;if(i<workedIndex){if(item?.type==="user-message")out.push(item);continue}out.push(item)}return out}const __codexWorkflowReactV71=typeof reactExports!=="undefined"?reactExports:typeof T!=="undefined"?T:null;const __codexWorkflowJsxV71=typeof p!=="undefined"?p:typeof jsxRuntimeExports!=="undefined"?jsxRuntimeExports:null;function __codexWorkflowUseStoreVersionV71(){if(!__codexWorkflowReactV71)return 0;if(typeof __codexWorkflowReactV71.useSyncExternalStore==="function")return __codexWorkflowReactV71.useSyncExternalStore(__codexWorkflowSubscribeV71,__codexWorkflowSnapshotV71,__codexWorkflowSnapshotV71);const[,setTick]=__codexWorkflowReactV71.useState(0);return __codexWorkflowReactV71.useEffect(()=>__codexWorkflowSubscribeV71(()=>setTick(v=>v+1)),[]),0}function __codexWorkflowWorkedForRowV71({item}){const mode=__codexWorkflowCollapseModeV71();if(!__codexWorkflowJsxV71)return null;if(mode==="disable")return __codexWorkflowJsxV71.jsx(k2n,{timeLabel:item?.timeLabel});const turnKey=item?.__codexTurnKey??null;if(!turnKey)return __codexWorkflowJsxV71.jsx(k2n,{timeLabel:item?.timeLabel});__codexWorkflowUseStoreVersionV71();const collapsed=__codexWorkflowIsCollapsedV71(turnKey,mode),label=collapsed?"Expand workflow details":"Collapse workflow details",onToggle=()=>__codexWorkflowToggleV71(turnKey,mode),onKeyDown=e=>{(e?.key==="Enter"||e?.key===" ")&&(e.preventDefault(),onToggle())};return __codexWorkflowJsxV71.jsx("button",{type:"button",className:"w-full text-left",onClick:onToggle,onKeyDown:onKeyDown,"aria-label":label,"data-codex-workflow-worked-for":"true",children:__codexWorkflowJsxV71.jsx(k2n,{timeLabel:item?.timeLabel})})}
+/* END CODEX_WORKFLOW_FOLD_PATCH_V71 */
+`;
+
+  const tailExportAnchor = "}));export{";
+  const tailAnchorIdx = out.lastIndexOf(tailExportAnchor);
+  const insertIdx =
+    tailAnchorIdx !== -1
+      ? tailAnchorIdx + "}));".length
+      : out.lastIndexOf("export{");
+
+  if (insertIdx === -1) {
+    throw new Error('patchWebviewBundleJsV71: could not find final export anchor');
+  }
+
+  return out.slice(0, insertIdx) + patch + out.slice(insertIdx);
 }
 
 function patchZhCnLocaleJs(source) {
@@ -317,17 +390,21 @@ async function main() {
   }
   log(`Extension: ${extDir}${version ? ` (version: ${version})` : ""}`);
 
-  if (cmp >= 0) {
+  if (cmp > 0) {
     throw new Error(
       [
-        `Detected openai.chatgpt@${version} (>= ${VERSION_SPLIT}).`,
-        "This main installer now routes 71+ to a separate track.",
-        "The 71+ installer is intentionally a placeholder in this phase and is not implemented yet.",
-        "Placeholder path: docs/remote/v71-plus/codex-folding-install.mjs",
+        `Detected openai.chatgpt@${version} (> ${VERSION_SPLIT}).`,
+        "Current v71+ implementation in this phase only supports exactly 0.4.71.",
+        "Please use the dedicated newer track when available.",
       ].join("\n")
     );
   }
-  log(`Route: <=0.4.70 legacy installer track (v70-and-earlier)`);
+  const isV71 = cmp === 0;
+  log(
+    isV71
+      ? "Route: ==0.4.71 new installer track (v71-plus)"
+      : "Route: <=0.4.70 legacy installer track (v70-and-earlier)"
+  );
 
   const hostJs = path.join(extDir, "out", "extension.js");
   const webviewJs = await readWebviewEntryJsPath(extDir);
@@ -341,8 +418,8 @@ async function main() {
   });
   results.push({
     file: webviewJs,
-    ...(await patchFile(webviewJs, patchWebviewBundleJs)),
-    verifyIncludes: "CODEX_WORKFLOW_FOLD_PATCH_V14",
+    ...(await patchFile(webviewJs, isV71 ? patchWebviewBundleJsV71 : patchWebviewBundleJs)),
+    verifyIncludes: isV71 ? "CODEX_WORKFLOW_FOLD_PATCH_V71_W1" : "CODEX_WORKFLOW_FOLD_PATCH_V14",
   });
   if (zhCnJs) {
     results.push({
