@@ -153,17 +153,21 @@ async function main() {
   }
   log(`Extension: ${extDir}${version ? ` (version: ${version})` : ""}`);
 
-  if (cmp >= 0) {
+  if (cmp > 0) {
     throw new Error(
       [
-        `Detected openai.chatgpt@${version} (>= ${VERSION_SPLIT}).`,
-        "This main uninstaller now routes 71+ to a separate track.",
-        "The 71+ uninstaller is intentionally a placeholder in this phase and is not implemented yet.",
-        "Placeholder path: docs/remote/v71-plus/codex-folding-uninstall.mjs",
+        `Detected openai.chatgpt@${version} (> ${VERSION_SPLIT}).`,
+        "Current v71+ implementation in this phase only supports exactly 0.4.71.",
+        "Please use the dedicated newer track when available.",
       ].join("\n")
     );
   }
-  log(`Route: <=0.4.70 legacy uninstaller track (v70-and-earlier)`);
+  const isV71 = cmp === 0;
+  log(
+    isV71
+      ? "Route: ==0.4.71 new uninstaller track (v71-plus)"
+      : "Route: <=0.4.70 legacy uninstaller track (v70-and-earlier)"
+  );
 
   const hostJs = path.join(extDir, "out", "extension.js");
   const webviewJs = await readWebviewEntryJsPath(extDir);
