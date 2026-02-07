@@ -52,25 +52,43 @@ function checkAnchors({ hostJs, webviewJs, localeJs }) {
   }
 
   if (webviewJs != null) {
+    const isV71Shape =
+      webviewJs.includes("function qK(t,e=[])") &&
+      webviewJs.includes("function k2n(t){") &&
+      webviewJs.includes('case"worked-for":') &&
+      !webviewJs.includes("function mapStateToLocalConversationItems");
+
     checks.push({
       file: "webview/assets/index-*.js",
       name: "webview:mapStateToLocalConversationItems",
-      ok: webviewJs.includes("function mapStateToLocalConversationItems"),
+      ok: isV71Shape || webviewJs.includes("function mapStateToLocalConversationItems"),
+    });
+    checks.push({
+      file: "webview/assets/index-*.js",
+      name: "webview:qK-v71-shape",
+      ok: !isV71Shape || webviewJs.includes("function qK(t,e=[])"),
+    });
+    checks.push({
+      file: "webview/assets/index-*.js",
+      name: "webview:k2n-v71-shape",
+      ok: !isV71Shape || webviewJs.includes("function k2n(t){"),
     });
     checks.push({
       file: "webview/assets/index-*.js",
       name: "webview:LocalConversationItemContent",
-      ok: webviewJs.includes("function LocalConversationItemContent"),
+      ok: isV71Shape || webviewJs.includes("function LocalConversationItemContent"),
     });
     checks.push({
       file: "webview/assets/index-*.js",
       name: "webview:InProgressFixedContentItem",
-      ok: webviewJs.includes("function InProgressFixedContentItem"),
+      ok: isV71Shape || webviewJs.includes("function InProgressFixedContentItem"),
     });
     checks.push({
       file: "webview/assets/index-*.js",
-      name: "webview:workflow-fold-patch-v10",
-      ok: webviewJs.includes("CODEX_WORKFLOW_FOLD_PATCH_V10"),
+      name: "webview:workflow-fold-patch-marker",
+      ok:
+        webviewJs.includes("CODEX_WORKFLOW_FOLD_PATCH_V10") ||
+        webviewJs.includes("CODEX_WORKFLOW_FOLD_PATCH_V71_W1"),
     });
   }
 

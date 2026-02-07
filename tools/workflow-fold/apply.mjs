@@ -149,8 +149,13 @@ async function main() {
     if (!host.includes("codex-workflow-collapse")) {
       throw new Error("Verify failed: host meta tag not present");
     }
-    if (!web.includes("CODEX_WORKFLOW_FOLD_PATCH_V10")) {
-      throw new Error("Verify failed: webview patch marker not present (V10)");
+    if (
+      !web.includes("CODEX_WORKFLOW_FOLD_PATCH_V10") &&
+      !web.includes("CODEX_WORKFLOW_FOLD_PATCH_V71_W1")
+    ) {
+      throw new Error(
+        "Verify failed: webview patch marker not present (expected V10 or V71_W1)"
+      );
     }
     if (zhCnJs) {
       const zh = await fs.readFile(zhCnJs, "utf8");
