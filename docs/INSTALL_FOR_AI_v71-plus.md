@@ -30,6 +30,16 @@
    - Windows: `node "$env:TEMP\\codex-folding-install-v71.mjs"`
    - macOS/Linux: `node "${TMPDIR:-/tmp}/codex-folding-install-v71.mjs"`
 
+## Target resolution (strict by default)
+
+- Installer scans `.vscode`, `.vscode-insiders`, `.vscode-oss` extension roots.
+- If multiple highest-version candidates exist, it fails fast instead of guessing.
+- If multiple `zh-CN-*.js` bundles exist and active entry cannot identify a unique one, it fails fast.
+- Recommended command when ambiguous:
+  - Windows: `node "$env:TEMP\\codex-folding-install-v71.mjs" --extDir "C:\\Users\\<YOU>\\.vscode\\extensions\\openai.chatgpt-0.4.71-win32-x64"`
+  - macOS/Linux: `node "${TMPDIR:-/tmp}/codex-folding-install-v71.mjs" --extDir "$HOME/.vscode/extensions/openai.chatgpt-0.4.71-<platform>"`
+- Optional fallback (not recommended): `--strictTarget=false`.
+
 3. Restart VS Code
 
 ## Verification hints

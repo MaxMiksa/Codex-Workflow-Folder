@@ -67,6 +67,19 @@ Do not clone. Use the remote scripts only:
 - Install: download + run `codex-folding-install.mjs` (patches 3 files + creates `*.bak` + writes config comment + saves this manual for the user)
 - Uninstall: download + run `codex-folding-uninstall.mjs` (restores from `*.bak`)
 
+## Target Resolution Rules (strict default)
+
+- Extension folder scan includes:
+  - `~/.vscode/extensions`
+  - `~/.vscode-insiders/extensions`
+  - `~/.vscode-oss/extensions`
+- Default behavior is strict (`--strictTarget=true`):
+  - If multiple highest-version extension candidates exist, fail fast and print candidate list.
+  - If multiple `zh-CN-*.js` bundles exist and active entry cannot uniquely reference one, fail fast.
+- Operator resolution path:
+  1) Pass explicit `--extDir <absolute-openai.chatgpt-folder>` and retry.
+  2) Only if necessary, use `--strictTarget=false` as temporary fallback.
+
 ## What gets modified on the user machine (strict)
 
 - Installed extension build artifacts (plus `*.bak` backups):

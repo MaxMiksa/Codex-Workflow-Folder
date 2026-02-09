@@ -65,15 +65,27 @@ Default behavior: the main installer entry (`docs/remote/codex-folding-install.m
        - `~/.vscode/extensions/openai.chatgpt-*` (VS Code Stable)
        - `~/.vscode-insiders/extensions/openai.chatgpt-*` (VS Code Insiders)
        - `~/.vscode-oss/extensions/openai.chatgpt-*` (some OSS builds / VSCodium)
+     - Target resolution is strict by default:
+       - If highest version cannot be uniquely determined, installer fails fast and prints candidates.
+       - Use `--extDir <absolute-path-to-openai.chatgpt-*>` to remove ambiguity.
      - Checks key anchors in the three target files (to decide compatibility)
      - Patches 2–3 files and creates `*.bak` backups (only once)
-       - `zh-CN-*.js` may be absent on some builds; the installer will warn and continue
+       - `zh-CN-*.js` may be absent on some builds; the installer will warn and continue.
+       - If multiple `zh-CN-*.js` exist and active entry cannot pick one uniquely, installer fails fast.
      - Downloads this project’s AI manual and saves it to a user-friendly location (prefer `Downloads`) so the user can keep it
      - Prints absolute paths of modified files and backups
      - Auto-routing result:
        - If version is `<=0.4.70`: continues with legacy installer logic.
        - If version is `==0.4.71`: applies the `Worked for` click-to-fold patch.
        - If version is `>0.4.71`: exits with explicit unsupported-version error.
+
+### Ambiguity resolution flags
+
+- Default mode is strict (`--strictTarget=true`), which avoids silent wrong-target patching.
+- Preferred fix when install fails due to ambiguity:
+  - Windows: `node "$env:TEMP\\codex-folding-install.mjs" --extDir "C:\\Users\\<YOU>\\.vscode\\extensions\\openai.chatgpt-0.4.71-win32-x64"`
+  - macOS/Linux: `node "${TMPDIR:-/tmp}/codex-folding-install.mjs" --extDir "$HOME/.vscode/extensions/openai.chatgpt-0.4.71-<platform>"`
+- Emergency fallback (not recommended): pass `--strictTarget=false` to allow legacy heuristic fallback.
 
 3. Restart VS Code
    - Required for the extension webview to pick up patched artifacts.
