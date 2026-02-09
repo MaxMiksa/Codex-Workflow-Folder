@@ -13,6 +13,25 @@ function log(message) {
   process.stdout.write(`${message}\n`);
 }
 
+function parseArgs(argv) {
+  const args = { extDir: null, strictTarget: true };
+  for (let i = 2; i < argv.length; i += 1) {
+    const a = argv[i];
+    if (a === "--extDir") args.extDir = argv[++i] ?? null;
+    else if (a === "--strictTarget") args.strictTarget = true;
+    else if (a === "--no-strictTarget") args.strictTarget = false;
+    else if (a.startsWith("--strictTarget=")) {
+      const v = a.slice("--strictTarget=".length).trim().toLowerCase();
+      if (v === "true" || v === "1") args.strictTarget = true;
+      else if (v === "false" || v === "0") args.strictTarget = false;
+      else throw new Error(`Invalid --strictTarget value: ${v}`);
+    } else {
+      throw new Error(`Unknown arg: ${a}`);
+    }
+  }
+  return args;
+}
+
 function parseSemverParts(version) {
   const m = String(version || "").trim().match(/^(\d+)\.(\d+)\.(\d+)$/);
   if (!m) return null;
@@ -34,6 +53,110 @@ function readVersionFromExtensionDirName(extDir) {
   const base = path.basename(extDir);
   const m = base.match(/^openai\.chatgpt-(\d+\.\d+\.\d+)/);
   return m ? m[1] : null;
+}
+
+function pickByMtime(candidates) {
+  const sorted = [...candidates].sort((a, b) => {
+    const mtimeDiff = (b.mtimeMs ?? 0) - (a.mtimeMs ?? 0);
+    if (mtimeDiff !== 0) return mtimeDiff;
+    return String(a.dir).localeCompare(String(b.dir));
+  });
+  return sorted[0];
+}
+
+function formatCandidateLines(candidates) {
+  return candidates
+    .map((c) => `- ${c.dir}${c.version ? ` (version: ${c.version})` : ""}`)
+    .join("\n");
+}
+
+function chooseBestExtensionCandidate(candidates, { strictTarget = true } = {}) {
+  if (!Array.isArray(candidates) || candidates.length === 0) {
+    throw new Error("No openai.chatgpt extension candidates found.");
+  }
+
+  const normalized = candidates.map((c) => ({
+    ...c,
+    version: c.version || readVersionFromExtensionDirName(c.dir),
+  }));
+
+  const parsed = normalized.filter((c) => parseSemverParts(c.version));
+  if (parsed.length === 0) {
+    if (strictTarget) {
+      throw new Error(
+        [
+          "Cannot resolve extension target: no semver-parsable candidates.",
+          "Candidates:",
+          formatCandidateLines(normalized),
+          "Please rerun with --extDir <path>.",
+        ].join("\n")
+      );
+    }
+    return pickByMtime(normalized);
+  }
+
+  let maxVersion = parsed[0].version;
+  for (let i = 1; i < parsed.length; i += 1) {
+    const cmp = compareSemver(parsed[i].version, maxVersion);
+    if (cmp != null && cmp > 0) maxVersion = parsed[i].version;
+  }
+
+  const highest = parsed.filter((c) => compareSemver(c.version, maxVersion) === 0);
+  if (highest.length === 1) return highest[0];
+
+  if (strictTarget) {
+    throw new Error(
+      [
+        `Ambiguous extension target: multiple candidates share highest version ${maxVersion}.`,
+        "Candidates:",
+        formatCandidateLines(highest),
+        "Please rerun with --extDir <path>.",
+      ].join("\n")
+    );
+  }
+  return pickByMtime(highest);
+}
+
+function parseEntryBundleFromIndexHtml(html) {
+  const m = String(html || "").match(/src="\.\/assets\/(index-[^"]+\.js)"/);
+  return m ? m[1] : null;
+}
+
+function chooseZhCnBundleName({ assetNames, entryJs, strictTarget = true }) {
+  const assets = Array.isArray(assetNames) ? assetNames : [];
+  const zhCandidates = assets.filter((n) => /^zh-CN-.*\.js$/.test(n));
+  if (zhCandidates.length === 0) return null;
+
+  const refs = [...new Set((String(entryJs || "").match(/zh-CN-[A-Za-z0-9_-]+\.js/g) || []))]
+    .filter((n) => zhCandidates.includes(n));
+
+  if (refs.length === 1) return refs[0];
+  if (refs.length > 1) {
+    if (strictTarget) {
+      throw new Error(
+        [
+          "Ambiguous zh-CN bundle: active entry references multiple zh-CN bundles.",
+          ...refs.map((n) => `- ${n}`),
+          "Please rerun with --extDir <path> or --strictTarget=false.",
+        ].join("\n")
+      );
+    }
+    return [...refs].sort((a, b) => a.localeCompare(b))[0];
+  }
+
+  if (zhCandidates.length === 1) return zhCandidates[0];
+
+  if (strictTarget) {
+    throw new Error(
+      [
+        "Ambiguous zh-CN bundle: multiple bundles found but active entry does not reference one uniquely.",
+        ...zhCandidates.map((n) => `- ${n}`),
+        "Please rerun with --extDir <path> or --strictTarget=false.",
+      ].join("\n")
+    );
+  }
+
+  return [...zhCandidates].sort((a, b) => a.localeCompare(b))[0];
 }
 
 async function fileExists(p) {
@@ -87,7 +210,7 @@ async function fetchText(url) {
   });
 }
 
-async function findLatestOpenAiChatgptExtensionDir() {
+async function findOpenAiChatgptExtensionCandidates() {
   const bases = getVsCodeExtensionBases();
   const existingBases = [];
   for (const base of bases) {
@@ -117,29 +240,56 @@ async function findLatestOpenAiChatgptExtensionDir() {
   }
 
   const stats = await Promise.all(
-    candidates.map(async (p) => ({ p, s: await fs.stat(p) }))
+    candidates.map(async (p) => {
+      const s = await fs.stat(p);
+      return {
+        dir: p,
+        mtimeMs: s.mtimeMs,
+        version: readVersionFromExtensionDirName(p),
+      };
+    })
   );
-  stats.sort((a, b) => b.s.mtimeMs - a.s.mtimeMs);
-  return stats[0].p;
+  return stats;
+}
+
+async function resolveOpenAiChatgptExtensionDir({ extDir, strictTarget }) {
+  if (extDir) {
+    const resolved = path.resolve(extDir);
+    if (!(await dirExists(resolved))) {
+      throw new Error(`--extDir does not exist or is not a directory: ${resolved}`);
+    }
+    if (!path.basename(resolved).startsWith("openai.chatgpt-")) {
+      throw new Error(
+        `--extDir must point to an openai.chatgpt-* extension folder: ${resolved}`
+      );
+    }
+    return resolved;
+  }
+
+  const candidates = await findOpenAiChatgptExtensionCandidates();
+  const picked = chooseBestExtensionCandidate(candidates, { strictTarget });
+  return picked.dir;
 }
 
 async function readWebviewEntryJsPath(extDir) {
   const htmlPath = path.join(extDir, "webview", "index.html");
   const html = await fs.readFile(htmlPath, "utf8");
-  const m = html.match(/src="\.\/assets\/(index-[^"]+\.js)"/);
-  if (!m) {
+  const bundleName = parseEntryBundleFromIndexHtml(html);
+  if (!bundleName) {
     throw new Error(`Could not find webview entry JS in ${htmlPath}`);
   }
-  return path.join(extDir, "webview", "assets", m[1]);
+  return path.join(extDir, "webview", "assets", bundleName);
 }
 
-async function readZhCnLocalePath(extDir) {
+async function readZhCnLocalePath(extDir, webviewJs, { strictTarget }) {
   const assetsDir = path.join(extDir, "webview", "assets");
-  const entries = (await fs.readdir(assetsDir)).filter((n) =>
-    /^zh-CN-.*\.js$/.test(n)
-  );
-  entries.sort((a, b) => a.localeCompare(b));
-  const hit = entries[0];
+  const entries = await fs.readdir(assetsDir);
+  const entryJs = await fs.readFile(webviewJs, "utf8");
+  const hit = chooseZhCnBundleName({
+    assetNames: entries,
+    entryJs,
+    strictTarget,
+  });
   return hit ? path.join(assetsDir, hit) : null;
 }
 
@@ -261,6 +411,8 @@ function patchWebviewBundleJsV71(source) {
     "const s=JJe(t.status);return{items:aet({items:n,status:s,turnStartedAtMs:t.turnStartedAtMs??null,finalAssistantStartedAtMs:t.finalAssistantStartedAtMs??null}),status:s,cwd:t.params?.cwd?t.params.cwd:null,collaborationMode:t.params?.collaborationMode??null}}function aet(";
   const workedCaseAnchor =
     'case"worked-for":{let f;return e[38]!==n.timeLabel?(f=p.jsx(k2n,{timeLabel:n.timeLabel}),e[38]=n.timeLabel,e[39]=f):f=e[39],f}';
+  const turnViewMemoAnchor =
+    "const n=ae.c(8),{conversationId:r,turn:i,requests:s,conversationDetailLevel:o,cwd:a}=e;let l;n[0]!==i||n[1]!==s?(l=qK(i,s),n[0]=i,n[1]=s,n[2]=l):l=n[2];";
 
   if (!source.includes(qkAnchor)) {
     throw new Error("patchWebviewBundleJsV71: qK anchor not found (only supports openai.chatgpt@0.4.71)");
@@ -271,11 +423,16 @@ function patchWebviewBundleJsV71(source) {
   if (!source.includes(workedCaseAnchor)) {
     throw new Error("patchWebviewBundleJsV71: worked-for render anchor not found (only supports openai.chatgpt@0.4.71)");
   }
+  if (!source.includes(turnViewMemoAnchor)) {
+    throw new Error("patchWebviewBundleJsV71: turn view memo anchor not found (only supports openai.chatgpt@0.4.71)");
+  }
 
   const qkReplacement =
     "const s=JJe(t.status),__cwfMode=__codexWorkflowCollapseModeV71(),__cwfItems=aet({items:n,status:s,turnStartedAtMs:t.turnStartedAtMs??null,finalAssistantStartedAtMs:t.finalAssistantStartedAtMs??null}),__cwfOut=__codexWorkflowApplyV71({items:__cwfItems,mode:__cwfMode,turn:t,status:s});return{items:__cwfOut,status:s,cwd:t.params?.cwd?t.params.cwd:null,collaborationMode:t.params?.collaborationMode??null}}function aet(";
   const workedCaseReplacement =
     'case"worked-for":return p.jsx(__codexWorkflowWorkedForRowV71,{item:n});';
+  const turnViewMemoReplacement =
+    "const n=ae.c(9),{conversationId:r,turn:i,requests:s,conversationDetailLevel:o,cwd:a}=e,__cwfViewVersion=__codexWorkflowUseStoreVersionV71();let l;n[0]!==i||n[1]!==s||n[8]!==__cwfViewVersion?(l=qK(i,s),n[0]=i,n[1]=s,n[8]=__cwfViewVersion,n[2]=l):l=n[2];";
 
   let out = source.replace(qkAnchor, qkReplacement);
   if (out === source) {
@@ -286,12 +443,16 @@ function patchWebviewBundleJsV71(source) {
   if (out2 === out) {
     throw new Error("patchWebviewBundleJsV71: failed to rewrite worked-for case segment");
   }
-  out = out2;
+  const out3 = out2.replace(turnViewMemoAnchor, turnViewMemoReplacement);
+  if (out3 === out2) {
+    throw new Error("patchWebviewBundleJsV71: failed to rewrite turn view memo segment");
+  }
+  out = out3;
 
   const patch = `
 /* CODEX_WORKFLOW_FOLD_PATCH_V71 */
 /* CODEX_WORKFLOW_FOLD_PATCH_V71_W1 */
-const __codexWorkflowCollapsedTurnsV71=globalThis.__codexWorkflowCollapsedTurnsV71 instanceof Map?globalThis.__codexWorkflowCollapsedTurnsV71:new Map;globalThis.__codexWorkflowCollapsedTurnsV71=__codexWorkflowCollapsedTurnsV71;const __codexWorkflowListenersV71=globalThis.__codexWorkflowListenersV71 instanceof Set?globalThis.__codexWorkflowListenersV71:new Set;globalThis.__codexWorkflowListenersV71=__codexWorkflowListenersV71;typeof globalThis.__codexWorkflowStoreVersionV71!=="number"&&(globalThis.__codexWorkflowStoreVersionV71=0);function __codexWorkflowEmitV71(){globalThis.__codexWorkflowStoreVersionV71=(globalThis.__codexWorkflowStoreVersionV71|0)+1;for(const l of __codexWorkflowListenersV71){try{l()}catch{}}}function __codexWorkflowSubscribeV71(l){return __codexWorkflowListenersV71.add(l),()=>{__codexWorkflowListenersV71.delete(l)}}function __codexWorkflowSnapshotV71(){return globalThis.__codexWorkflowStoreVersionV71|0}function __codexWorkflowCollapseModeV71(){const m=globalThis.document?.querySelector('meta[name="codex-workflow-collapse"]');const v=m?.getAttribute("content")?.trim();return v==="collapse"||v==="expand"||v==="disable"?v:"collapse"}function __codexWorkflowBuildTurnKeyV71(turn){try{const id=turn?.id??turn?.turnId??turn?.params?.turnId;if(id!=null)return"turn:"+String(id);const s=turn?.turnStartedAtMs??"na",f=turn?.finalAssistantStartedAtMs??"na",n=Array.isArray(turn?.items)?turn.items.length:0;return"turn-ts:"+String(s)+":"+String(f)+":"+String(n)}catch{return"turn:unknown"}}function __codexWorkflowDefaultCollapsedV71(mode){return mode==="collapse"}function __codexWorkflowIsCollapsedV71(turnKey,mode){if(mode==="disable")return!1;const cur=__codexWorkflowCollapsedTurnsV71.get(turnKey);return typeof cur==="boolean"?cur:__codexWorkflowDefaultCollapsedV71(mode)}function __codexWorkflowToggleV71(turnKey,mode){if(!turnKey||mode==="disable")return;const next=!__codexWorkflowIsCollapsedV71(turnKey,mode);__codexWorkflowCollapsedTurnsV71.set(turnKey,next);__codexWorkflowEmitV71()}function __codexWorkflowApplyV71({items,mode,turn,status}){if(!Array.isArray(items))return items;if(mode==="disable")return items;const turnKey=__codexWorkflowBuildTurnKeyV71(turn);let workedIndex=-1;for(let i=items.length-1;i>=0;i-=1){if(items[i]?.type==="worked-for"){workedIndex=i;break}}if(workedIndex<0)return items;const collapsed=__codexWorkflowIsCollapsedV71(turnKey,mode);const out=[];for(let i=0;i<items.length;i+=1){const raw=items[i];const item=i===workedIndex&&raw&&typeof raw==="object"?{...raw,__codexTurnKey:turnKey,__codexWorkflowCollapsed:collapsed}:raw;if(i<workedIndex){if(item?.type==="user-message")out.push(item);continue}out.push(item)}return out}const __codexWorkflowReactV71=typeof reactExports!=="undefined"?reactExports:typeof T!=="undefined"?T:null;const __codexWorkflowJsxV71=typeof p!=="undefined"?p:typeof jsxRuntimeExports!=="undefined"?jsxRuntimeExports:null;function __codexWorkflowUseStoreVersionV71(){if(!__codexWorkflowReactV71)return 0;if(typeof __codexWorkflowReactV71.useSyncExternalStore==="function")return __codexWorkflowReactV71.useSyncExternalStore(__codexWorkflowSubscribeV71,__codexWorkflowSnapshotV71,__codexWorkflowSnapshotV71);const[,setTick]=__codexWorkflowReactV71.useState(0);return __codexWorkflowReactV71.useEffect(()=>__codexWorkflowSubscribeV71(()=>setTick(v=>v+1)),[]),0}function __codexWorkflowWorkedForRowV71({item}){const mode=__codexWorkflowCollapseModeV71();if(!__codexWorkflowJsxV71)return null;if(mode==="disable")return __codexWorkflowJsxV71.jsx(k2n,{timeLabel:item?.timeLabel});const turnKey=item?.__codexTurnKey??null;if(!turnKey)return __codexWorkflowJsxV71.jsx(k2n,{timeLabel:item?.timeLabel});__codexWorkflowUseStoreVersionV71();const collapsed=__codexWorkflowIsCollapsedV71(turnKey,mode),label=collapsed?"Expand workflow details":"Collapse workflow details",onToggle=()=>__codexWorkflowToggleV71(turnKey,mode),onKeyDown=e=>{(e?.key==="Enter"||e?.key===" ")&&(e.preventDefault(),onToggle())};return __codexWorkflowJsxV71.jsx("button",{type:"button",className:"w-full text-left",onClick:onToggle,onKeyDown:onKeyDown,"aria-label":label,"data-codex-workflow-worked-for":"true",children:__codexWorkflowJsxV71.jsx(k2n,{timeLabel:item?.timeLabel})})}
+const __codexWorkflowCollapsedTurnsV71=globalThis.__codexWorkflowCollapsedTurnsV71 instanceof Map?globalThis.__codexWorkflowCollapsedTurnsV71:new Map;globalThis.__codexWorkflowCollapsedTurnsV71=__codexWorkflowCollapsedTurnsV71;const __codexWorkflowListenersV71=globalThis.__codexWorkflowListenersV71 instanceof Set?globalThis.__codexWorkflowListenersV71:new Set;globalThis.__codexWorkflowListenersV71=__codexWorkflowListenersV71;typeof globalThis.__codexWorkflowStoreVersionV71!=="number"&&(globalThis.__codexWorkflowStoreVersionV71=0);function __codexWorkflowEmitV71(){globalThis.__codexWorkflowStoreVersionV71=(globalThis.__codexWorkflowStoreVersionV71|0)+1;for(const l of __codexWorkflowListenersV71){try{l()}catch{}}}function __codexWorkflowSubscribeV71(l){return __codexWorkflowListenersV71.add(l),()=>{__codexWorkflowListenersV71.delete(l)}}function __codexWorkflowSnapshotV71(){return globalThis.__codexWorkflowStoreVersionV71|0}function __codexWorkflowCollapseModeV71(){const m=globalThis.document?.querySelector('meta[name="codex-workflow-collapse"]');const v=m?.getAttribute("content")?.trim();return v==="collapse"||v==="expand"||v==="disable"?v:"collapse"}function __codexWorkflowBuildTurnKeyV71(turn){try{const id=turn?.id??turn?.turnId??turn?.params?.turnId;if(id!=null)return"turn:"+String(id);const s=turn?.turnStartedAtMs??"na",f=turn?.finalAssistantStartedAtMs??"na",n=Array.isArray(turn?.items)?turn.items.length:0;return"turn-ts:"+String(s)+":"+String(f)+":"+String(n)}catch{return"turn:unknown"}}function __codexWorkflowDefaultCollapsedV71(mode){return mode==="collapse"}function __codexWorkflowIsCollapsedV71(turnKey,mode){if(mode==="disable")return!1;const cur=__codexWorkflowCollapsedTurnsV71.get(turnKey);return typeof cur==="boolean"?cur:__codexWorkflowDefaultCollapsedV71(mode)}function __codexWorkflowToggleV71(turnKey,mode){if(!turnKey||mode==="disable")return;const next=!__codexWorkflowIsCollapsedV71(turnKey,mode);__codexWorkflowCollapsedTurnsV71.set(turnKey,next);__codexWorkflowEmitV71()}function __codexWorkflowApplyV71({items,mode,turn,status}){if(!Array.isArray(items))return items;if(mode==="disable")return items;const turnKey=__codexWorkflowBuildTurnKeyV71(turn);let workedIndex=-1;for(let i=items.length-1;i>=0;i-=1){if(items[i]?.type==="worked-for"){workedIndex=i;break}}if(workedIndex<0)return items;const collapsed=__codexWorkflowIsCollapsedV71(turnKey,mode);const out=[];for(let i=0;i<items.length;i+=1){const raw=items[i];const item=i===workedIndex&&raw&&typeof raw==="object"?{...raw,__codexTurnKey:turnKey,__codexWorkflowCollapsed:collapsed}:raw;if(!collapsed){out.push(item);continue}if(i<workedIndex){if(item?.type==="user-message")out.push(item);continue}out.push(item)}return out}const __codexWorkflowReactV71=typeof reactExports!=="undefined"?reactExports:typeof T!=="undefined"?T:null;const __codexWorkflowJsxV71=typeof p!=="undefined"?p:typeof jsxRuntimeExports!=="undefined"?jsxRuntimeExports:null;function __codexWorkflowUseStoreVersionV71(){if(!__codexWorkflowReactV71)return 0;if(typeof __codexWorkflowReactV71.useSyncExternalStore==="function")return __codexWorkflowReactV71.useSyncExternalStore(__codexWorkflowSubscribeV71,__codexWorkflowSnapshotV71,__codexWorkflowSnapshotV71);const[,setTick]=__codexWorkflowReactV71.useState(0);return __codexWorkflowReactV71.useEffect(()=>__codexWorkflowSubscribeV71(()=>setTick(v=>v+1)),[]),0}function __codexWorkflowWorkedForRowV71({item}){const mode=__codexWorkflowCollapseModeV71();if(!__codexWorkflowJsxV71)return null;if(mode==="disable")return __codexWorkflowJsxV71.jsx(k2n,{timeLabel:item?.timeLabel});const turnKey=item?.__codexTurnKey??null;if(!turnKey)return __codexWorkflowJsxV71.jsx(k2n,{timeLabel:item?.timeLabel});__codexWorkflowUseStoreVersionV71();const collapsed=__codexWorkflowIsCollapsedV71(turnKey,mode),label=collapsed?"Expand workflow details":"Collapse workflow details",onToggle=()=>__codexWorkflowToggleV71(turnKey,mode),onKeyDown=e=>{(e?.key==="Enter"||e?.key===" ")&&(e.preventDefault(),onToggle())};return __codexWorkflowJsxV71.jsx("button",{type:"button",className:"w-full text-left cursor-pointer",onClick:onToggle,onKeyDown:onKeyDown,"aria-label":label,"data-codex-workflow-worked-for":"true",children:__codexWorkflowJsxV71.jsx(k2n,{timeLabel:item?.timeLabel})})}
 /* END CODEX_WORKFLOW_FOLD_PATCH_V71 */
 `;
 
@@ -378,8 +539,9 @@ async function readExtensionVersion(extDir) {
 }
 
 async function main() {
+  const args = parseArgs(process.argv);
   const VERSION_SPLIT = "0.4.71";
-  const extDir = await findLatestOpenAiChatgptExtensionDir();
+  const extDir = await resolveOpenAiChatgptExtensionDir(args);
   const { version: versionFromPkg } = await readExtensionVersion(extDir);
   const version = versionFromPkg || readVersionFromExtensionDirName(extDir);
   const cmp = compareSemver(version, VERSION_SPLIT);
@@ -408,7 +570,7 @@ async function main() {
 
   const hostJs = path.join(extDir, "out", "extension.js");
   const webviewJs = await readWebviewEntryJsPath(extDir);
-  const zhCnJs = await readZhCnLocalePath(extDir);
+  const zhCnJs = await readZhCnLocalePath(extDir, webviewJs, args);
 
   const results = [];
   results.push({
