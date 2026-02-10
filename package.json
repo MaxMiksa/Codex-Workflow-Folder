@@ -6,7 +6,7 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "test": "node --test tools/workflow-fold/patcher.test.mjs",
+    "test": "node --test tools/workflow-fold/patcher.test.mjs tools/workflow-fold/target-resolution.test.mjs",
     "inspect": "node tools/workflow-fold/inspect.mjs",
     "apply": "node tools/workflow-fold/apply.mjs --verify",
     "verify": "node tools/workflow-fold/apply.mjs --dry-run --verify",
