@@ -7,14 +7,28 @@ import {
   patchWebviewBundleJs,
   patchZhCnLocaleJs,
 } from "./patcher.mjs";
+import {
+  chooseBestExtensionCandidate,
+  chooseZhCnBundleName,
+  parseEntryBundleFromIndexHtml,
+  readVersionFromExtensionDirName,
+} from "./target-resolution.mjs";
 
 function parseArgs(argv) {
-  const args = { dryRun: false, extDir: null, verify: false };
+  const args = { dryRun: false, extDir: null, verify: false, strictTarget: true };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
     if (a === "--dry-run") args.dryRun = true;
     else if (a === "--verify") args.verify = true;
     else if (a === "--extDir") args.extDir = argv[++i] ?? null;
+    else if (a === "--strictTarget") args.strictTarget = true;
+    else if (a === "--no-strictTarget") args.strictTarget = false;
+    else if (a.startsWith("--strictTarget=")) {
+      const v = a.slice("--strictTarget=".length).trim().toLowerCase();
+      if (v === "true" || v === "1") args.strictTarget = true;
+      else if (v === "false" || v === "0") args.strictTarget = false;
+      else throw new Error(`Invalid --strictTarget value: ${v}`);
+    }
     else throw new Error(`Unknown arg: ${a}`);
   }
   return args;
@@ -47,7 +61,7 @@ function getVsCodeExtensionBases() {
   ];
 }
 
-async function findLatestOpenAiChatgptExtensionDir() {
+async function findOpenAiChatgptExtensionCandidates() {
   const bases = getVsCodeExtensionBases();
   const existingBases = [];
   for (const base of bases) {
@@ -77,28 +91,56 @@ async function findLatestOpenAiChatgptExtensionDir() {
   }
 
   const stats = await Promise.all(
-    candidates.map(async (p) => ({ p, s: await fs.stat(p) }))
+    candidates.map(async (p) => {
+      const s = await fs.stat(p);
+      return {
+        dir: p,
+        mtimeMs: s.mtimeMs,
+        version: readVersionFromExtensionDirName(p),
+      };
+    })
   );
-  stats.sort((a, b) => b.s.mtimeMs - a.s.mtimeMs);
-  return stats[0].p;
+  return stats;
+}
+
+async function resolveOpenAiChatgptExtensionDir({ extDir, strictTarget }) {
+  if (extDir) {
+    const resolved = path.resolve(extDir);
+    if (!(await dirExists(resolved))) {
+      throw new Error(`--extDir does not exist or is not a directory: ${resolved}`);
+    }
+    if (!path.basename(resolved).startsWith("openai.chatgpt-")) {
+      throw new Error(
+        `--extDir must point to an openai.chatgpt-* extension folder: ${resolved}`
+      );
+    }
+    return resolved;
+  }
+
+  const candidates = await findOpenAiChatgptExtensionCandidates();
+  const picked = chooseBestExtensionCandidate(candidates, { strictTarget });
+  return picked.dir;
 }
 
 async function readWebviewEntryJsPath(extDir) {
   const htmlPath = path.join(extDir, "webview", "index.html");
   const html = await fs.readFile(htmlPath, "utf8");
-  const m = html.match(/src="\.\/assets\/(index-[^"]+\.js)"/);
-  if (!m) {
+  const entryBundle = parseEntryBundleFromIndexHtml(html);
+  if (!entryBundle) {
     throw new Error(`Could not find webview entry JS in ${htmlPath}`);
   }
-  return path.join(extDir, "webview", "assets", m[1]);
+  return path.join(extDir, "webview", "assets", entryBundle);
 }
 
-async function readZhCnLocalePath(extDir) {
+async function readZhCnLocalePath(extDir, webviewJs, { strictTarget }) {
   const assetsDir = path.join(extDir, "webview", "assets");
   const entries = await fs.readdir(assetsDir);
-  const hits = entries.filter((n) => /^zh-CN-.*\.js$/.test(n));
-  hits.sort((a, b) => a.localeCompare(b));
-  const hit = hits[0];
+  const entryJs = await fs.readFile(webviewJs, "utf8");
+  const hit = chooseZhCnBundleName({
+    assetNames: entries,
+    entryJs,
+    strictTarget,
+  });
   return hit ? path.join(assetsDir, hit) : null;
 }
 
@@ -120,11 +162,11 @@ async function patchFile(filePath, patchFn, { dryRun }) {
 
 async function main() {
   const args = parseArgs(process.argv);
-  const extDir = args.extDir ?? (await findLatestOpenAiChatgptExtensionDir());
+  const extDir = await resolveOpenAiChatgptExtensionDir(args);
 
   const hostJs = path.join(extDir, "out", "extension.js");
   const webviewJs = await readWebviewEntryJsPath(extDir);
-  const zhCnJs = await readZhCnLocalePath(extDir);
+  const zhCnJs = await readZhCnLocalePath(extDir, webviewJs, args);
 
   const results = [];
   results.push({
