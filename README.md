@@ -1,7 +1,7 @@
 <h1 align="center">Codex Workflow Folder</h1>
 
 <p align="center">
-  <a href="#"><img alt="Version" src="https://img.shields.io/badge/version-v1.2.0-blue.svg" /></a>
+  <a href="#"><img alt="Version" src="https://img.shields.io/badge/version-v1.3.0-blue.svg" /></a>
   <a href="#"><img alt="VS Code" src="https://img.shields.io/badge/VS%20Code-extension-007ACC.svg" /></a>
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-green.svg" /></a>
   &nbsp;&nbsp;
@@ -10,7 +10,7 @@
 
 ✅ **Auto-fold Lengthy Workflows | Customizable Settings | One-Prompt AI Installation**  
 ✅ **Hide the "Thinking" Noise | Keep Your Chat Clean & Focused | Bilingual (EN/中文)**  
-✅ **Cross-Platform (Windows/macOS/Linux) | Version-Track Routing (71+ Track In Progress)**  
+✅ **Cross-Platform (Windows/macOS/Linux) | Version-Profile Routing (<=0.4.70 / 0.4.71 / 0.4.73)**  
 
 Want a clean and **easy-to-browse** Codex? Tired of Codex's **long workflows**?  
 It's super simple! Just copy **only one sentence** (see blow) to Codex to enable folding of Codex's thought process and command execution flow in VS Code.
@@ -49,7 +49,7 @@ Copy and paste the following prompt to Codex:
 Strictly follow https://github.com/MaxMiksa/Codex-Workflow-Folder/blob/main/docs/INSTALL_FOR_AI.md to install this feature. Do not improvise.
 ```
 
-> Note: the installer now auto-routes by local extension version (`<=0.4.70` legacy track, `>=0.4.71` dedicated 71+ track placeholder).
+> Note: the installer now auto-routes by local extension version (`<=0.4.70` legacy, `0.4.71` profile, `0.4.73` profile; other versions fail-fast).
 
 > 👉 **Important:** Restart VS Code after the AI finishes the task.
 

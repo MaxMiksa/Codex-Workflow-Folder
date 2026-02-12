@@ -5,11 +5,15 @@ import {
   patchExtensionHostJs,
   patchWebviewBundleJs,
   patchWebviewBundleJsV71,
+  patchWebviewBundleJsV73,
   patchZhCnLocaleJs,
 } from "./patcher.mjs";
 
 const v71InputFixture =
   'function JJe(t){return t}function qK(t,e=[]){const n=t.items;const s=JJe(t.status);return{items:aet({items:n,status:s,turnStartedAtMs:t.turnStartedAtMs??null,finalAssistantStartedAtMs:t.finalAssistantStartedAtMs??null}),status:s,cwd:t.params?.cwd?t.params.cwd:null,collaborationMode:t.params?.collaborationMode??null}}function aet({items:t,status:e,turnStartedAtMs:n,finalAssistantStartedAtMs:r}){return t}function k2n(t){const e=ae.c(6),{timeLabel:n}=t;return p.jsx("div",{children:n})}function e7(t){const e=ae.c(73),{item:n}=t;switch(n.type){case"worked-for":{let f;return e[38]!==n.timeLabel?(f=p.jsx(k2n,{timeLabel:n.timeLabel}),e[38]=n.timeLabel,e[39]=f):f=e[39],f}default:return null}}const B2n=75,z2n=T.memo(function(e){const n=ae.c(8),{conversationId:r,turn:i,requests:s,conversationDetailLevel:o,cwd:a}=e;let l;n[0]!==i||n[1]!==s?(l=qK(i,s),n[0]=i,n[1]=s,n[2]=l):l=n[2];const c=l;let u;return n[3]!==o||n[4]!==r||n[5]!==a||n[6]!==c?(u=p.jsx(U2n,{conversationId:r,turn:c,conversationDetailLevel:o,cwd:a}),n[3]=o,n[4]=r,n[5]=a,n[6]=c,n[7]=u):u=n[7],u},H2n);export{qK as qK};';
+
+const v73InputFixture =
+  'function jtt(t){return t}function oR(t,e=[]){const n=t.items;const s=jtt(t.status);return{items:Vtt({items:n,status:s,turnStartedAtMs:t.turnStartedAtMs??null,finalAssistantStartedAtMs:t.finalAssistantStartedAtMs??null}),status:s,cwd:t.params?.cwd?t.params.cwd:null,collaborationMode:t.params?.collaborationMode??null}}function Vtt({items:t,status:e,turnStartedAtMs:n,finalAssistantStartedAtMs:r}){return t}function T3n(t){const e=oe.c(6),{timeLabel:n}=t;return p.jsx("div",{children:n})}function s7(t){const e=oe.c(74),{item:n}=t;switch(n.type){case"worked-for":{let f;return e[39]!==n.timeLabel?(f=p.jsx(T3n,{timeLabel:n.timeLabel}),e[39]=n.timeLabel,e[40]=f):f=e[40],f}default:return null}}const W3n=T.memo(function(e){const n=oe.c(8),{conversationId:r,turn:i,requests:s,conversationDetailLevel:o,cwd:a}=e;let l;n[0]!==i||n[1]!==s?(l=oR(i,s),n[0]=i,n[1]=s,n[2]=l):l=n[2];const c=l;let u;return n[3]!==o||n[4]!==r||n[5]!==a||n[6]!==c?(u=p.jsx(q3n,{conversationId:r,turn:c,conversationDetailLevel:o,cwd:a}),n[3]=o,n[4]=r,n[5]=a,n[6]=c,n[7]=u):u=n[7],u},V3n);export{W3n as W3n};';
 
 test("patchExtensionHostJs injects workflow meta tag", () => {
   const input =
@@ -136,6 +140,19 @@ test("patchWebviewBundleJs auto-routes to v71 patch shape", () => {
   assert.match(out, /CODEX_WORKFLOW_FOLD_PATCH_V71_W1/);
 });
 
+test("patchWebviewBundleJsV73 injects marker and rewrites worked-for case", () => {
+  const out = patchWebviewBundleJsV73(v73InputFixture);
+  assert.match(out, /CODEX_WORKFLOW_FOLD_PATCH_V73_W1/);
+  assert.match(out, /__codexWorkflowApplyV71/);
+  assert.match(out, /__codexWorkflowWorkedForRowV71/);
+  assert.ok(out.includes('case"worked-for":return p.jsx(__codexWorkflowWorkedForRowV71,{item:n});'));
+});
+
+test("patchWebviewBundleJs auto-routes to v73 patch shape", () => {
+  const out = patchWebviewBundleJs(v73InputFixture);
+  assert.match(out, /CODEX_WORKFLOW_FOLD_PATCH_V73_W1/);
+});
+
 test("v71 apply function keeps only user/worked-for/final when collapsed", () => {
   const input = v71InputFixture;
   const out = patchWebviewBundleJsV71(input);
@@ -245,4 +262,40 @@ test("v71 patch wires turn view memo cache to workflow store version", () => {
   assert.match(out, /__codexWorkflowUseStoreVersionV71\(\)/);
   assert.match(out, /n\[0\]!==i\|\|n\[1\]!==s\|\|n\[8\]!==__cwfViewVersion/);
   assert.match(out, /n\[0\]=i,n\[1\]=s,n\[8\]=__cwfViewVersion,n\[2\]=l/);
+});
+
+test("v73 apply function keeps only user/worked-for/final when collapsed", () => {
+  const out = patchWebviewBundleJsV73(v73InputFixture);
+  const start = out.indexOf("/* CODEX_WORKFLOW_FOLD_PATCH_V71 */");
+  const end = out.indexOf("/* END CODEX_WORKFLOW_FOLD_PATCH_V71 */");
+  assert.ok(start !== -1 && end !== -1);
+  const patchBlock =
+    out.slice(start, end + "/* END CODEX_WORKFLOW_FOLD_PATCH_V71 */".length) + "\n";
+
+  const ctx = {
+    document: { querySelector: () => ({ getAttribute: () => "collapse" }) },
+    reactExports: {},
+    p: { jsx: () => ({}) },
+    T3n: () => null,
+  };
+  vm.runInNewContext(patchBlock, ctx, { timeout: 1000 });
+
+  const collapsed = ctx.__codexWorkflowApplyV71({
+    items: [
+      { type: "user-message", id: "u1" },
+      { type: "reasoning", id: "r1" },
+      { type: "exec", id: "x1" },
+      { type: "worked-for", timeLabel: "3s" },
+      { type: "assistant-message", id: "a1" },
+    ],
+    mode: "collapse",
+    turn: { id: "turn-73" },
+    status: "complete",
+  });
+
+  assert.equal(
+    collapsed.map((i) => i.type).join(","),
+    "user-message,worked-for,assistant-message"
+  );
+  assert.equal(collapsed[1].__codexTurnKey, "turn:turn-73");
 });

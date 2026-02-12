@@ -193,10 +193,11 @@ async function main() {
     }
     if (
       !web.includes("CODEX_WORKFLOW_FOLD_PATCH_V10") &&
+      !web.includes("CODEX_WORKFLOW_FOLD_PATCH_V73_W1") &&
       !web.includes("CODEX_WORKFLOW_FOLD_PATCH_V71_W1")
     ) {
       throw new Error(
-        "Verify failed: webview patch marker not present (expected V10 or V71_W1)"
+        "Verify failed: webview patch marker not present (expected V10 or V71_W1 or V73_W1)"
       );
     }
     if (zhCnJs) {

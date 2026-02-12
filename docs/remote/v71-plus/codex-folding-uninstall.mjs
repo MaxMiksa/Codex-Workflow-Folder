@@ -292,28 +292,39 @@ async function restoreFromBackup(filePath) {
 
 async function main() {
   const args = parseArgs(process.argv);
-  const VERSION_SPLIT = "0.4.71";
+  const V71 = "0.4.71";
+  const V73 = "0.4.73";
   const extDir = await resolveOpenAiChatgptExtensionDir(args);
   const { version: versionFromPkg } = await readExtensionVersion(extDir);
   const version = versionFromPkg || readVersionFromExtensionDirName(extDir);
-  const cmp = compareSemver(version, VERSION_SPLIT);
-  if (cmp == null) {
+  const cmpV71 = compareSemver(version, V71);
+  const cmpV73 = compareSemver(version, V73);
+  if (cmpV71 == null || cmpV73 == null) {
     throw new Error(
       `Cannot parse extension version for routing (detected: ${versionFromPkg || "unknown"}). Please check ${path.join(extDir, "package.json")}.`
     );
   }
   log(`Extension: ${extDir}${version ? ` (version: ${version})` : ""}`);
 
-  if (cmp !== 0) {
+  let profile;
+  if (cmpV71 === 0) {
+    profile = "v71";
+  } else if (cmpV73 === 0) {
+    profile = "v73";
+  } else {
     throw new Error(
       [
         `Detected openai.chatgpt@${version ?? "unknown"}.`,
-        "This direct track only supports exactly 0.4.71.",
+        "This direct track currently supports exactly 0.4.71 and 0.4.73.",
         "Please use docs/remote/codex-folding-uninstall.mjs for auto-routing.",
       ].join("\n")
     );
   }
-  log("Route: ==0.4.71 direct uninstaller track (v71-plus)");
+  log(
+    profile === "v71"
+      ? "Route: ==0.4.71 direct uninstaller profile (v71-plus)"
+      : "Route: ==0.4.73 direct uninstaller profile (v71-plus)"
+  );
 
   const hostJs = path.join(extDir, "out", "extension.js");
   const webviewJs = await readWebviewEntryJsPath(extDir);

@@ -336,7 +336,22 @@ function patchExtensionHostJs(source) {
 }
 
 function patchWebviewBundleJs(source) {
-  if (source.includes("CODEX_WORKFLOW_FOLD_PATCH_V71_W1")) return source;
+  if (
+    source.includes("CODEX_WORKFLOW_FOLD_PATCH_V71_W1") ||
+    source.includes("CODEX_WORKFLOW_FOLD_PATCH_V73_W1")
+  ) {
+    return source;
+  }
+
+  const looksLikeV73 =
+    source.includes("const s=jtt(t.status);return{items:Vtt({items:n,status:s,turnStartedAtMs:t.turnStartedAtMs??null,finalAssistantStartedAtMs:t.finalAssistantStartedAtMs??null}),status:s,cwd:t.params?.cwd?t.params.cwd:null,collaborationMode:t.params?.collaborationMode??null}}function Vtt(") &&
+    source.includes("function T3n(t){") &&
+    source.includes('case"worked-for":{let f;return e[39]!==n.timeLabel?(f=p.jsx(T3n,{timeLabel:n.timeLabel}),e[39]=n.timeLabel,e[40]=f):f=e[40],f}') &&
+    source.includes("const n=oe.c(8),{conversationId:r,turn:i,requests:s,conversationDetailLevel:o,cwd:a}=e;let l;n[0]!==i||n[1]!==s?(l=oR(i,s),n[0]=i,n[1]=s,n[2]=l):l=n[2];");
+
+  if (looksLikeV73) {
+    return patchWebviewBundleJsV73(source);
+  }
 
   const looksLikeV71 =
     source.includes("const s=JJe(t.status);return{items:aet({items:n,status:s,turnStartedAtMs:t.turnStartedAtMs??null,finalAssistantStartedAtMs:t.finalAssistantStartedAtMs??null}),status:s,cwd:t.params?.cwd?t.params.cwd:null,collaborationMode:t.params?.collaborationMode??null}}function aet(") &&
@@ -398,6 +413,30 @@ if(__codexOrigLocalConversationItemContent){try{LocalConversationItemContent=fun
   return source.slice(0, exportIdx) + patch + source.slice(exportIdx);
 }
 
+function buildWorkedForTogglePatchV71({ marker, workedForComponent }) {
+  return `
+/* CODEX_WORKFLOW_FOLD_PATCH_V71 */
+/* ${marker} */
+const __codexWorkflowCollapsedTurnsV71=globalThis.__codexWorkflowCollapsedTurnsV71 instanceof Map?globalThis.__codexWorkflowCollapsedTurnsV71:new Map;globalThis.__codexWorkflowCollapsedTurnsV71=__codexWorkflowCollapsedTurnsV71;const __codexWorkflowListenersV71=globalThis.__codexWorkflowListenersV71 instanceof Set?globalThis.__codexWorkflowListenersV71:new Set;globalThis.__codexWorkflowListenersV71=__codexWorkflowListenersV71;typeof globalThis.__codexWorkflowStoreVersionV71!=="number"&&(globalThis.__codexWorkflowStoreVersionV71=0);function __codexWorkflowEmitV71(){globalThis.__codexWorkflowStoreVersionV71=(globalThis.__codexWorkflowStoreVersionV71|0)+1;for(const l of __codexWorkflowListenersV71){try{l()}catch{}}}function __codexWorkflowSubscribeV71(l){return __codexWorkflowListenersV71.add(l),()=>{__codexWorkflowListenersV71.delete(l)}}function __codexWorkflowSnapshotV71(){return globalThis.__codexWorkflowStoreVersionV71|0}function __codexWorkflowCollapseModeV71(){const m=globalThis.document?.querySelector('meta[name="codex-workflow-collapse"]');const v=m?.getAttribute("content")?.trim();return v==="collapse"||v==="expand"||v==="disable"?v:"collapse"}function __codexWorkflowBuildTurnKeyV71(turn){try{const id=turn?.id??turn?.turnId??turn?.params?.turnId;if(id!=null)return"turn:"+String(id);const s=turn?.turnStartedAtMs??"na",f=turn?.finalAssistantStartedAtMs??"na",n=Array.isArray(turn?.items)?turn.items.length:0;return"turn-ts:"+String(s)+":"+String(f)+":"+String(n)}catch{return"turn:unknown"}}function __codexWorkflowDefaultCollapsedV71(mode){return mode==="collapse"}function __codexWorkflowIsCollapsedV71(turnKey,mode){if(mode==="disable")return!1;const cur=__codexWorkflowCollapsedTurnsV71.get(turnKey);return typeof cur==="boolean"?cur:__codexWorkflowDefaultCollapsedV71(mode)}function __codexWorkflowToggleV71(turnKey,mode){if(!turnKey||mode==="disable")return;const next=!__codexWorkflowIsCollapsedV71(turnKey,mode);__codexWorkflowCollapsedTurnsV71.set(turnKey,next);__codexWorkflowEmitV71()}function __codexWorkflowApplyV71({items,mode,turn,status}){if(!Array.isArray(items))return items;if(mode==="disable")return items;const turnKey=__codexWorkflowBuildTurnKeyV71(turn);let workedIndex=-1;for(let i=items.length-1;i>=0;i-=1){if(items[i]?.type==="worked-for"){workedIndex=i;break}}if(workedIndex<0)return items;const collapsed=__codexWorkflowIsCollapsedV71(turnKey,mode);const out=[];for(let i=0;i<items.length;i+=1){const raw=items[i];const item=i===workedIndex&&raw&&typeof raw==="object"?{...raw,__codexTurnKey:turnKey,__codexWorkflowCollapsed:collapsed}:raw;if(!collapsed){out.push(item);continue}if(i<workedIndex){if(item?.type==="user-message")out.push(item);continue}out.push(item)}return out}const __codexWorkflowReactV71=typeof reactExports!=="undefined"?reactExports:typeof T!=="undefined"?T:null;const __codexWorkflowJsxV71=typeof p!=="undefined"?p:typeof jsxRuntimeExports!=="undefined"?jsxRuntimeExports:null;function __codexWorkflowUseStoreVersionV71(){if(!__codexWorkflowReactV71)return 0;if(typeof __codexWorkflowReactV71.useSyncExternalStore==="function")return __codexWorkflowReactV71.useSyncExternalStore(__codexWorkflowSubscribeV71,__codexWorkflowSnapshotV71,__codexWorkflowSnapshotV71);const[,setTick]=__codexWorkflowReactV71.useState(0);return __codexWorkflowReactV71.useEffect(()=>__codexWorkflowSubscribeV71(()=>setTick(v=>v+1)),[]),0}function __codexWorkflowWorkedForRowV71({item}){const mode=__codexWorkflowCollapseModeV71();if(!__codexWorkflowJsxV71)return null;if(mode==="disable")return __codexWorkflowJsxV71.jsx(${workedForComponent},{timeLabel:item?.timeLabel});const turnKey=item?.__codexTurnKey??null;if(!turnKey)return __codexWorkflowJsxV71.jsx(${workedForComponent},{timeLabel:item?.timeLabel});__codexWorkflowUseStoreVersionV71();const collapsed=__codexWorkflowIsCollapsedV71(turnKey,mode),label=collapsed?"Expand workflow details":"Collapse workflow details",onToggle=()=>__codexWorkflowToggleV71(turnKey,mode),onKeyDown=e=>{(e?.key==="Enter"||e?.key===" ")&&(e.preventDefault(),onToggle())};return __codexWorkflowJsxV71.jsx("button",{type:"button",className:"w-full text-left cursor-pointer",onClick:onToggle,onKeyDown:onKeyDown,"aria-label":label,"data-codex-workflow-worked-for":"true",children:__codexWorkflowJsxV71.jsx(${workedForComponent},{timeLabel:item?.timeLabel})})}
+/* END CODEX_WORKFLOW_FOLD_PATCH_V71 */
+`;
+}
+
+function insertWorkedForTogglePatch(source, patch, errorContext) {
+  const tailExportAnchor = "}));export{";
+  const tailAnchorIdx = source.lastIndexOf(tailExportAnchor);
+  const insertIdx =
+    tailAnchorIdx !== -1
+      ? tailAnchorIdx + "}));".length
+      : source.lastIndexOf("export{");
+
+  if (insertIdx === -1) {
+    throw new Error(`${errorContext}: could not find final export anchor`);
+  }
+
+  return source.slice(0, insertIdx) + patch + source.slice(insertIdx);
+}
+
 function patchWebviewBundleJsV71(source) {
   if (source.includes("CODEX_WORKFLOW_FOLD_PATCH_V71_W1")) return source;
 
@@ -449,25 +488,68 @@ function patchWebviewBundleJsV71(source) {
   }
   out = out3;
 
-  const patch = `
-/* CODEX_WORKFLOW_FOLD_PATCH_V71 */
-/* CODEX_WORKFLOW_FOLD_PATCH_V71_W1 */
-const __codexWorkflowCollapsedTurnsV71=globalThis.__codexWorkflowCollapsedTurnsV71 instanceof Map?globalThis.__codexWorkflowCollapsedTurnsV71:new Map;globalThis.__codexWorkflowCollapsedTurnsV71=__codexWorkflowCollapsedTurnsV71;const __codexWorkflowListenersV71=globalThis.__codexWorkflowListenersV71 instanceof Set?globalThis.__codexWorkflowListenersV71:new Set;globalThis.__codexWorkflowListenersV71=__codexWorkflowListenersV71;typeof globalThis.__codexWorkflowStoreVersionV71!=="number"&&(globalThis.__codexWorkflowStoreVersionV71=0);function __codexWorkflowEmitV71(){globalThis.__codexWorkflowStoreVersionV71=(globalThis.__codexWorkflowStoreVersionV71|0)+1;for(const l of __codexWorkflowListenersV71){try{l()}catch{}}}function __codexWorkflowSubscribeV71(l){return __codexWorkflowListenersV71.add(l),()=>{__codexWorkflowListenersV71.delete(l)}}function __codexWorkflowSnapshotV71(){return globalThis.__codexWorkflowStoreVersionV71|0}function __codexWorkflowCollapseModeV71(){const m=globalThis.document?.querySelector('meta[name="codex-workflow-collapse"]');const v=m?.getAttribute("content")?.trim();return v==="collapse"||v==="expand"||v==="disable"?v:"collapse"}function __codexWorkflowBuildTurnKeyV71(turn){try{const id=turn?.id??turn?.turnId??turn?.params?.turnId;if(id!=null)return"turn:"+String(id);const s=turn?.turnStartedAtMs??"na",f=turn?.finalAssistantStartedAtMs??"na",n=Array.isArray(turn?.items)?turn.items.length:0;return"turn-ts:"+String(s)+":"+String(f)+":"+String(n)}catch{return"turn:unknown"}}function __codexWorkflowDefaultCollapsedV71(mode){return mode==="collapse"}function __codexWorkflowIsCollapsedV71(turnKey,mode){if(mode==="disable")return!1;const cur=__codexWorkflowCollapsedTurnsV71.get(turnKey);return typeof cur==="boolean"?cur:__codexWorkflowDefaultCollapsedV71(mode)}function __codexWorkflowToggleV71(turnKey,mode){if(!turnKey||mode==="disable")return;const next=!__codexWorkflowIsCollapsedV71(turnKey,mode);__codexWorkflowCollapsedTurnsV71.set(turnKey,next);__codexWorkflowEmitV71()}function __codexWorkflowApplyV71({items,mode,turn,status}){if(!Array.isArray(items))return items;if(mode==="disable")return items;const turnKey=__codexWorkflowBuildTurnKeyV71(turn);let workedIndex=-1;for(let i=items.length-1;i>=0;i-=1){if(items[i]?.type==="worked-for"){workedIndex=i;break}}if(workedIndex<0)return items;const collapsed=__codexWorkflowIsCollapsedV71(turnKey,mode);const out=[];for(let i=0;i<items.length;i+=1){const raw=items[i];const item=i===workedIndex&&raw&&typeof raw==="object"?{...raw,__codexTurnKey:turnKey,__codexWorkflowCollapsed:collapsed}:raw;if(!collapsed){out.push(item);continue}if(i<workedIndex){if(item?.type==="user-message")out.push(item);continue}out.push(item)}return out}const __codexWorkflowReactV71=typeof reactExports!=="undefined"?reactExports:typeof T!=="undefined"?T:null;const __codexWorkflowJsxV71=typeof p!=="undefined"?p:typeof jsxRuntimeExports!=="undefined"?jsxRuntimeExports:null;function __codexWorkflowUseStoreVersionV71(){if(!__codexWorkflowReactV71)return 0;if(typeof __codexWorkflowReactV71.useSyncExternalStore==="function")return __codexWorkflowReactV71.useSyncExternalStore(__codexWorkflowSubscribeV71,__codexWorkflowSnapshotV71,__codexWorkflowSnapshotV71);const[,setTick]=__codexWorkflowReactV71.useState(0);return __codexWorkflowReactV71.useEffect(()=>__codexWorkflowSubscribeV71(()=>setTick(v=>v+1)),[]),0}function __codexWorkflowWorkedForRowV71({item}){const mode=__codexWorkflowCollapseModeV71();if(!__codexWorkflowJsxV71)return null;if(mode==="disable")return __codexWorkflowJsxV71.jsx(k2n,{timeLabel:item?.timeLabel});const turnKey=item?.__codexTurnKey??null;if(!turnKey)return __codexWorkflowJsxV71.jsx(k2n,{timeLabel:item?.timeLabel});__codexWorkflowUseStoreVersionV71();const collapsed=__codexWorkflowIsCollapsedV71(turnKey,mode),label=collapsed?"Expand workflow details":"Collapse workflow details",onToggle=()=>__codexWorkflowToggleV71(turnKey,mode),onKeyDown=e=>{(e?.key==="Enter"||e?.key===" ")&&(e.preventDefault(),onToggle())};return __codexWorkflowJsxV71.jsx("button",{type:"button",className:"w-full text-left cursor-pointer",onClick:onToggle,onKeyDown:onKeyDown,"aria-label":label,"data-codex-workflow-worked-for":"true",children:__codexWorkflowJsxV71.jsx(k2n,{timeLabel:item?.timeLabel})})}
-/* END CODEX_WORKFLOW_FOLD_PATCH_V71 */
-`;
+  const patch = buildWorkedForTogglePatchV71({
+    marker: "CODEX_WORKFLOW_FOLD_PATCH_V71_W1",
+    workedForComponent: "k2n",
+  });
+  return insertWorkedForTogglePatch(out, patch, "patchWebviewBundleJsV71");
+}
 
-  const tailExportAnchor = "}));export{";
-  const tailAnchorIdx = out.lastIndexOf(tailExportAnchor);
-  const insertIdx =
-    tailAnchorIdx !== -1
-      ? tailAnchorIdx + "}));".length
-      : out.lastIndexOf("export{");
+function patchWebviewBundleJsV73(source) {
+  if (source.includes("CODEX_WORKFLOW_FOLD_PATCH_V73_W1")) return source;
 
-  if (insertIdx === -1) {
-    throw new Error('patchWebviewBundleJsV71: could not find final export anchor');
+  if (source.includes("CODEX_WORKFLOW_FOLD_PATCH")) {
+    throw new Error(
+      "patchWebviewBundleJsV73: previous workflow patch detected; restore from .bak before applying 0.4.73 patch"
+    );
   }
 
-  return out.slice(0, insertIdx) + patch + out.slice(insertIdx);
+  const mapperAnchor =
+    "const s=jtt(t.status);return{items:Vtt({items:n,status:s,turnStartedAtMs:t.turnStartedAtMs??null,finalAssistantStartedAtMs:t.finalAssistantStartedAtMs??null}),status:s,cwd:t.params?.cwd?t.params.cwd:null,collaborationMode:t.params?.collaborationMode??null}}function Vtt(";
+  const workedCaseAnchor =
+    'case"worked-for":{let f;return e[39]!==n.timeLabel?(f=p.jsx(T3n,{timeLabel:n.timeLabel}),e[39]=n.timeLabel,e[40]=f):f=e[40],f}';
+  const turnViewMemoAnchor =
+    "const n=oe.c(8),{conversationId:r,turn:i,requests:s,conversationDetailLevel:o,cwd:a}=e;let l;n[0]!==i||n[1]!==s?(l=oR(i,s),n[0]=i,n[1]=s,n[2]=l):l=n[2];";
+
+  if (!source.includes(mapperAnchor)) {
+    throw new Error("patchWebviewBundleJsV73: mapper anchor not found (only supports openai.chatgpt@0.4.73 profile)");
+  }
+  if (!source.includes("function T3n(t){")) {
+    throw new Error("patchWebviewBundleJsV73: worked-for row component anchor not found (expected T3n)");
+  }
+  if (!source.includes(workedCaseAnchor)) {
+    throw new Error("patchWebviewBundleJsV73: worked-for render anchor not found");
+  }
+  if (!source.includes(turnViewMemoAnchor)) {
+    throw new Error("patchWebviewBundleJsV73: turn view memo anchor not found");
+  }
+
+  const mapperReplacement =
+    "const s=jtt(t.status),__cwfMode=__codexWorkflowCollapseModeV71(),__cwfItems=Vtt({items:n,status:s,turnStartedAtMs:t.turnStartedAtMs??null,finalAssistantStartedAtMs:t.finalAssistantStartedAtMs??null}),__cwfOut=__codexWorkflowApplyV71({items:__cwfItems,mode:__cwfMode,turn:t,status:s});return{items:__cwfOut,status:s,cwd:t.params?.cwd?t.params.cwd:null,collaborationMode:t.params?.collaborationMode??null}}function Vtt(";
+  const workedCaseReplacement =
+    'case"worked-for":return p.jsx(__codexWorkflowWorkedForRowV71,{item:n});';
+  const turnViewMemoReplacement =
+    "const n=oe.c(9),{conversationId:r,turn:i,requests:s,conversationDetailLevel:o,cwd:a}=e,__cwfViewVersion=__codexWorkflowUseStoreVersionV71();let l;n[0]!==i||n[1]!==s||n[8]!==__cwfViewVersion?(l=oR(i,s),n[0]=i,n[1]=s,n[8]=__cwfViewVersion,n[2]=l):l=n[2];";
+
+  let out = source.replace(mapperAnchor, mapperReplacement);
+  if (out === source) {
+    throw new Error("patchWebviewBundleJsV73: failed to rewrite mapper segment");
+  }
+  const out2 = out.replace(workedCaseAnchor, workedCaseReplacement);
+  if (out2 === out) {
+    throw new Error("patchWebviewBundleJsV73: failed to rewrite worked-for case segment");
+  }
+  const out3 = out2.replace(turnViewMemoAnchor, turnViewMemoReplacement);
+  if (out3 === out2) {
+    throw new Error("patchWebviewBundleJsV73: failed to rewrite turn view memo segment");
+  }
+  out = out3;
+
+  const patch = buildWorkedForTogglePatchV71({
+    marker: "CODEX_WORKFLOW_FOLD_PATCH_V73_W1",
+    workedForComponent: "T3n",
+  });
+  return insertWorkedForTogglePatch(out, patch, "patchWebviewBundleJsV73");
 }
 
 function patchZhCnLocaleJs(source) {
@@ -540,28 +622,39 @@ async function readExtensionVersion(extDir) {
 
 async function main() {
   const args = parseArgs(process.argv);
-  const VERSION_SPLIT = "0.4.71";
+  const V71 = "0.4.71";
+  const V73 = "0.4.73";
   const extDir = await resolveOpenAiChatgptExtensionDir(args);
   const { version: versionFromPkg } = await readExtensionVersion(extDir);
   const version = versionFromPkg || readVersionFromExtensionDirName(extDir);
-  const cmp = compareSemver(version, VERSION_SPLIT);
-  if (cmp == null) {
+  const cmpV71 = compareSemver(version, V71);
+  const cmpV73 = compareSemver(version, V73);
+  if (cmpV71 == null || cmpV73 == null) {
     throw new Error(
       `Cannot parse extension version for routing (detected: ${versionFromPkg || "unknown"}). Please check ${path.join(extDir, "package.json")}.`
     );
   }
   log(`Extension: ${extDir}${version ? ` (version: ${version})` : ""}`);
 
-  if (cmp !== 0) {
+  let profile;
+  if (cmpV71 === 0) {
+    profile = "v71";
+  } else if (cmpV73 === 0) {
+    profile = "v73";
+  } else {
     throw new Error(
       [
         `Detected openai.chatgpt@${version ?? "unknown"}.`,
-        "This direct track only supports exactly 0.4.71.",
+        "This direct track currently supports exactly 0.4.71 and 0.4.73.",
         "Please use docs/remote/codex-folding-install.mjs for auto-routing.",
       ].join("\n")
     );
   }
-  log("Route: ==0.4.71 direct installer track (v71-plus)");
+  log(
+    profile === "v71"
+      ? "Route: ==0.4.71 direct installer profile (v71-plus)"
+      : "Route: ==0.4.73 direct installer profile (v71-plus)"
+  );
 
   const hostJs = path.join(extDir, "out", "extension.js");
   const webviewJs = await readWebviewEntryJsPath(extDir);
@@ -575,8 +668,14 @@ async function main() {
   });
   results.push({
     file: webviewJs,
-    ...(await patchFile(webviewJs, patchWebviewBundleJsV71)),
-    verifyIncludes: "CODEX_WORKFLOW_FOLD_PATCH_V71_W1",
+    ...(await patchFile(
+      webviewJs,
+      profile === "v71" ? patchWebviewBundleJsV71 : patchWebviewBundleJsV73
+    )),
+    verifyIncludes:
+      profile === "v71"
+        ? "CODEX_WORKFLOW_FOLD_PATCH_V71_W1"
+        : "CODEX_WORKFLOW_FOLD_PATCH_V73_W1",
   });
   if (zhCnJs) {
     results.push({

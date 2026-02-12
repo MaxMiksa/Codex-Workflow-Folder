@@ -1,6 +1,6 @@
-# Install Guide (Direct Track) — `openai.chatgpt == 0.4.71`
+# Install Guide (Direct Track) — `openai.chatgpt == 0.4.71 | 0.4.73`
 
-> Use this direct track only when your local extension version is exactly `0.4.71`.
+> Use this direct track only when your local extension version is exactly `0.4.71` or `0.4.73`.
 
 ## Canonical script
 
@@ -15,7 +15,7 @@
 
 ## Strict version guard
 
-- This direct script **fails fast** unless the installed extension is exactly `openai.chatgpt@0.4.71`.
+- This direct script **fails fast** unless the installed extension is exactly `openai.chatgpt@0.4.71` or `openai.chatgpt@0.4.73`.
 - For automatic routing by version, use `docs/INSTALL_FOR_AI.md`.
 
 ## Steps
@@ -44,5 +44,7 @@
 
 ## Verification hints
 
-- Patched webview marker includes: `CODEX_WORKFLOW_FOLD_PATCH_V71_W1`
+- Patched webview marker includes:
+  - `CODEX_WORKFLOW_FOLD_PATCH_V71_W1` (for `0.4.71`)
+  - `CODEX_WORKFLOW_FOLD_PATCH_V73_W1` (for `0.4.73`)
 - Host marker includes: `CODEX_WORKFLOW_FOLD_HOST_V7`

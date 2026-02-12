@@ -292,32 +292,44 @@ async function restoreFromBackup(filePath) {
 
 async function main() {
   const args = parseArgs(process.argv);
-  const VERSION_SPLIT = "0.4.71";
+  const LEGACY_MAX = "0.4.70";
+  const V71 = "0.4.71";
+  const V73 = "0.4.73";
   const extDir = await resolveOpenAiChatgptExtensionDir(args);
   const { version: versionFromPkg } = await readExtensionVersion(extDir);
   const version = versionFromPkg || readVersionFromExtensionDirName(extDir);
-  const cmp = compareSemver(version, VERSION_SPLIT);
-  if (cmp == null) {
+  const cmpLegacy = compareSemver(version, LEGACY_MAX);
+  const cmpV71 = compareSemver(version, V71);
+  const cmpV73 = compareSemver(version, V73);
+  if (cmpLegacy == null || cmpV71 == null || cmpV73 == null) {
     throw new Error(
       `Cannot parse extension version for routing (detected: ${versionFromPkg || "unknown"}). Please check ${path.join(extDir, "package.json")}.`
     );
   }
   log(`Extension: ${extDir}${version ? ` (version: ${version})` : ""}`);
 
-  if (cmp > 0) {
+  let route;
+  if (cmpLegacy <= 0) {
+    route = "legacy";
+  } else if (cmpV71 === 0) {
+    route = "v71";
+  } else if (cmpV73 === 0) {
+    route = "v73";
+  } else {
     throw new Error(
       [
-        `Detected openai.chatgpt@${version} (> ${VERSION_SPLIT}).`,
-        "Current v71+ implementation in this phase only supports exactly 0.4.71.",
-        "Please use the dedicated newer track when available.",
+        `Detected openai.chatgpt@${version}.`,
+        `Supported profiles in this release: <= ${LEGACY_MAX}, == ${V71}, == ${V73}.`,
+        "This version needs a new profile before uninstall routing can proceed safely.",
       ].join("\n")
     );
   }
-  const isV71 = cmp === 0;
   log(
-    isV71
-      ? "Route: ==0.4.71 new uninstaller track (v71-plus)"
-      : "Route: <=0.4.70 legacy uninstaller track (v70-and-earlier)"
+    route === "legacy"
+      ? "Route: <=0.4.70 legacy uninstaller track (v70-and-earlier)"
+      : route === "v71"
+        ? "Route: ==0.4.71 profile (v71-plus)"
+        : "Route: ==0.4.73 profile (v71-plus)"
   );
 
   const hostJs = path.join(extDir, "out", "extension.js");

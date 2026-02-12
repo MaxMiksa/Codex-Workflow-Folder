@@ -149,7 +149,8 @@ function checkAnchors({ hostJs, webviewJs, localeJs }) {
       name: "webview:workflow-fold-patch-marker",
       ok:
         webviewJs.includes("CODEX_WORKFLOW_FOLD_PATCH_V10") ||
-        webviewJs.includes("CODEX_WORKFLOW_FOLD_PATCH_V71_W1"),
+        webviewJs.includes("CODEX_WORKFLOW_FOLD_PATCH_V71_W1") ||
+        webviewJs.includes("CODEX_WORKFLOW_FOLD_PATCH_V73_W1"),
     });
   }
 

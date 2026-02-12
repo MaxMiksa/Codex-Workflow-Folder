@@ -6,15 +6,16 @@ This manual is written for an AI agent to perform a deterministic install/uninst
 
 Version behavior is split:
 - `<=0.4.70`: folds pre-final process items into a per-turn `Workflow` expandable row.
-- `==0.4.71`: keeps current UI and adds click-to-fold on `Worked for {time}` to hide pre-final process items.
+- `==0.4.71` / `==0.4.73`: keeps current UI and adds click-to-fold on `Worked for {time}` to hide pre-final process items.
 
 ## Version Routing (important)
 
 This project now uses version-separated tracks:
 
 - `openai.chatgpt <= 0.4.70`: legacy installer/uninstaller track (`v70-and-earlier`) in active use.
-- `openai.chatgpt == 0.4.71`: dedicated track (`v71-plus`) and supported in this phase.
-- `openai.chatgpt > 0.4.71`: intentionally fail-fast until a newer profile is added.
+- `openai.chatgpt == 0.4.71`: `v71-plus` profile track and supported.
+- `openai.chatgpt == 0.4.73`: `v71-plus` profile track and supported.
+- Other versions: fail-fast until a matching profile is added.
 
 ## Canonical URLs (remote-first, no clone)
 
@@ -22,15 +23,15 @@ This project now uses version-separated tracks:
 - Install guide: `https://github.com/MaxMiksa/Codex-Workflow-Folder/blob/main/docs/INSTALL_FOR_AI.md`
 - Uninstall guide: `https://github.com/MaxMiksa/Codex-Workflow-Folder/blob/main/docs/UNINSTALL_FOR_AI.md`
 - Remote install script:
-  - Latest release (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/v1.2.0/docs/remote/codex-folding-install.mjs`
+  - Latest release (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/v1.3.0/docs/remote/codex-folding-install.mjs`
   - Latest main (recommended for cross-platform): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/codex-folding-install.mjs`
   - Legacy direct track (`<=0.4.70`): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/v70-and-earlier/codex-folding-install.mjs`
-  - 0.4.71 direct track: `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/v71-plus/codex-folding-install.mjs`
+  - 0.4.71 / 0.4.73 direct profile track: `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/v71-plus/codex-folding-install.mjs`
 - Remote uninstall script:
-  - Latest release (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/v1.2.0/docs/remote/codex-folding-uninstall.mjs`
+  - Latest release (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/v1.3.0/docs/remote/codex-folding-uninstall.mjs`
   - Latest main (recommended for cross-platform): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/codex-folding-uninstall.mjs`
   - Legacy direct track (`<=0.4.70`): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/v70-and-earlier/codex-folding-uninstall.mjs`
-  - 0.4.71 direct track: `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/v71-plus/codex-folding-uninstall.mjs`
+  - 0.4.71 / 0.4.73 direct profile track: `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/v71-plus/codex-folding-uninstall.mjs`
   - If `raw.githubusercontent.com` is blocked:
     - Install: `https://github.com/MaxMiksa/Codex-Workflow-Folder/raw/main/docs/remote/codex-folding-install.mjs`
     - Uninstall: `https://github.com/MaxMiksa/Codex-Workflow-Folder/raw/main/docs/remote/codex-folding-uninstall.mjs`
@@ -39,7 +40,7 @@ This project now uses version-separated tracks:
 
 Per turn (per user message):
 - `<=0.4.70`: user + `Workflow` row + final answer.
-- `==0.4.71`: user + `Worked for {time}` row + final answer (click row toggles fold for pre-final process items).
+- `==0.4.71` / `==0.4.73`: user + `Worked for {time}` row + final answer (click row toggles fold for pre-final process items).
 
 ## Preconditions
 
@@ -96,6 +97,7 @@ Do not clone. Use the remote scripts only:
 - Patched webview file should include either:
   - `CODEX_WORKFLOW_FOLD_PATCH_V10` (legacy track)
   - `CODEX_WORKFLOW_FOLD_PATCH_V71_W1` (0.4.71 track)
+  - `CODEX_WORKFLOW_FOLD_PATCH_V73_W1` (0.4.73 track)
 - Patched `zh-CN` locale file (if present) must include: `codex.workflow.label`
 
 ## Version mismatch strategy (required AI behavior)
@@ -111,8 +113,8 @@ If the installed `openai.chatgpt` version is not exactly what this repo was test
    - Read the three target files and see whether the patch anchors can be applied (the installer script will report failures)
 2. Route by version first:
    - `<=0.4.70`: continue with legacy track.
-   - `==0.4.71`: route to `v71-plus` track.
-   - `>0.4.71`: fail fast with unsupported-version message.
+   - `==0.4.71` or `==0.4.73`: route to `v71-plus` profile track.
+   - Other versions: fail fast with unsupported-version message.
 
 3. For active track decide compatibility:
    - If the same patch logic can be applied safely (anchors found; verification markers appear after patch), proceed.

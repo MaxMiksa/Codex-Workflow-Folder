@@ -1,7 +1,7 @@
 <h1 align="center">Codex Workflow Folder</h1>
 
 <p align="center">
-  <a href="#"><img alt="版本" src="https://img.shields.io/badge/版本-v1.2.0-blue.svg" /></a>
+  <a href="#"><img alt="版本" src="https://img.shields.io/badge/版本-v1.3.0-blue.svg" /></a>
   <a href="#"><img alt="VS Code" src="https://img.shields.io/badge/VS%20Code-扩展-007ACC.svg" /></a>
   <a href="LICENSE"><img alt="许可证" src="https://img.shields.io/badge/许可证-MIT-green.svg" /></a>
   &nbsp;&nbsp;
@@ -10,7 +10,7 @@
 
 ✅ **自动折叠冗长流程 | 支持个性化配置 | AI 一句指令极速安装**  
 ✅ **隐藏“思考与工具”噪音 | 让对话界面回归清爽 | 中英双语支持**  
-✅ **跨平台（Windows/macOS/Linux） | 版本分轨安装（71+ 轨道开发中）**  
+✅ **跨平台（Windows/macOS/Linux） | 版本分轨安装（<=0.4.70 / 0.4.71 / 0.4.73）**  
 
 想拥有一个整洁且**便于上下浏览**的codex？厌倦了codex中长长的workflow？  
 超级简单！**仅需复制一句话**给codex，你就能够在vscode中手动折叠codex的思考与命令执行流程。
@@ -49,7 +49,7 @@
 严格按照 https://github.com/MaxMiksa/Codex-Workflow-Folder/blob/main/docs/INSTALL_FOR_AI.md 的步骤安装该功能，不要自由发挥。
 ```
 
-> 说明：安装脚本现在会按本地扩展版本自动分流（`<=0.4.70` 走 legacy 轨道，`>=0.4.71` 走 71+ 独立轨道占位）。
+> 说明：安装脚本会按本地扩展版本自动分流（`<=0.4.70` 走 legacy，`0.4.71`/`0.4.73` 走 profile；其他版本 fail-fast）。
 
 > 👉 **重要：** AI 执行完毕后，请 **重启 VS Code** 以生效。
 

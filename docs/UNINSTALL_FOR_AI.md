@@ -7,8 +7,9 @@
 This project now separates uninstall tracks by extension version:
 
 - `openai.chatgpt <= 0.4.70`: uses the legacy track (`v70-and-earlier`) and is supported in this phase.
-- `openai.chatgpt == 0.4.71`: routes to the `v71-plus` track and is supported in this phase.
-- `openai.chatgpt > 0.4.71`: intentionally fails fast (not yet supported in this phase).
+- `openai.chatgpt == 0.4.71`: routes to the `v71-plus` profile track and is supported.
+- `openai.chatgpt == 0.4.73`: routes to the `v71-plus` profile track and is supported.
+- Any other version: fails fast until a matching profile is added.
 
 Default behavior: the main uninstaller entry (`docs/remote/codex-folding-uninstall.mjs`) auto-detects the local extension version and routes accordingly.
 
@@ -16,10 +17,10 @@ Default behavior: the main uninstaller entry (`docs/remote/codex-folding-uninsta
 
 - This file: `https://github.com/MaxMiksa/Codex-Workflow-Folder/blob/main/docs/UNINSTALL_FOR_AI.md`
 - Remote uninstall script (single file):
-  - Latest release (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/v1.2.0/docs/remote/codex-folding-uninstall.mjs`
+  - Latest release (pinned): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/v1.3.0/docs/remote/codex-folding-uninstall.mjs`
   - Latest main (recommended for cross-platform): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/codex-folding-uninstall.mjs`
   - Legacy direct track (`<=0.4.70`): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/v70-and-earlier/codex-folding-uninstall.mjs`
-  - 0.4.71 direct track: `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/v71-plus/codex-folding-uninstall.mjs`
+  - 0.4.71 / 0.4.73 direct profile track: `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/remote/v71-plus/codex-folding-uninstall.mjs`
 - Manual (for user to save): `https://raw.githubusercontent.com/MaxMiksa/Codex-Workflow-Folder/main/docs/AI_OPERATOR_MANUAL.md`
 
 ## Preconditions
@@ -65,15 +66,16 @@ Default behavior: the main uninstaller entry (`docs/remote/codex-folding-uninsta
      - Prints absolute paths of restored files
      - Auto-routing result:
        - If version is `<=0.4.70`: continues with legacy uninstall logic.
-       - If version is `==0.4.71`: continues with `v71-plus` uninstall logic.
-       - If version is `>0.4.71`: exits with explicit unsupported-version error.
+       - If version is `==0.4.71`: continues with `v71-plus` uninstall profile.
+       - If version is `==0.4.73`: continues with `v71-plus` uninstall profile.
+       - Otherwise: exits with explicit unsupported-version error.
 
 ### Ambiguity resolution flags
 
 - Default mode is strict (`--strictTarget=true`).
 - Preferred fix when uninstall fails due to ambiguity:
-  - Windows: `node "$env:TEMP\\codex-folding-uninstall.mjs" --extDir "C:\\Users\\<YOU>\\.vscode\\extensions\\openai.chatgpt-0.4.71-win32-x64"`
-  - macOS/Linux: `node "${TMPDIR:-/tmp}/codex-folding-uninstall.mjs" --extDir "$HOME/.vscode/extensions/openai.chatgpt-0.4.71-<platform>"`
+  - Windows: `node "$env:TEMP\\codex-folding-uninstall.mjs" --extDir "C:\\Users\\<YOU>\\.vscode\\extensions\\openai.chatgpt-<VERSION>-win32-x64"`
+  - macOS/Linux: `node "${TMPDIR:-/tmp}/codex-folding-uninstall.mjs" --extDir "$HOME/.vscode/extensions/openai.chatgpt-<VERSION>-<platform>"`
 - Emergency fallback (not recommended): pass `--strictTarget=false`.
 
 3. Restart VS Code
@@ -89,6 +91,6 @@ Default behavior: the main uninstaller entry (`docs/remote/codex-folding-uninsta
 Use these only when you explicitly want to bypass auto-routing:
 
 - Legacy (`<=0.4.70`): `docs/remote/v70-and-earlier/codex-folding-uninstall.mjs`
-- 0.4.71 direct: `docs/remote/v71-plus/codex-folding-uninstall.mjs`
+- v71-plus profile track (`0.4.71` / `0.4.73`): `docs/remote/v71-plus/codex-folding-uninstall.mjs`
 
 
