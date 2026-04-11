@@ -105,4 +105,4 @@ Strictly follow https://github.com/MaxMiksa/Codex-Workflow-Folder/blob/main/docs
 Welcome to submit Issues and Pull Requests!
 Any questions or suggestions? Please contact Zheyuan (Max) Kong (Carnegie Mellon University, Pittsburgh, PA).
 
-Zheyuan (Max) Kong: kongzheyuan@outlook.com | zheyuank@andrew.cmu.edu
+Zheyuan (Max) Kong: kongzheyuan@outlook.com | zheyuank@tepper.cmu.edu
