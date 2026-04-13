@@ -105,3 +105,4 @@
 如有任何问题或建议，请联系 Zheyuan (Max) Kong (卡内基梅隆大学，宾夕法尼亚州)。
 
 Zheyuan (Max) Kong: kongzheyuan@outlook.com | zheyuank@tepper.cmu.edu
+本项目 GitHub 链接：https://github.com/MaxMiksa/Codex-Workflow-Folder
